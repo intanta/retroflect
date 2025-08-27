@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma-client/generated"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Retro {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  team       String 
+  status     Status   @default(REFLECT)
+  sprint     String?
+  categories Category[]
+}
+
+enum Status {
+  REFLECT
+  VOTE
+  REVIEW
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  retro     Retro    @relation(fields: [retroId], references: [id])
+  retroId   String
+  comments  Comment[]
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  text        String
+  votes       Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String
+}
+
+
+        
