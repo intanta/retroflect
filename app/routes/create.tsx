@@ -1,6 +1,8 @@
 import { type MetaFunction, type ActionFunctionArgs, Form, Link } from 'react-router'
 import { z } from 'zod'
 
+import { db } from '~/lib/db.server'
+
 export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Retroflect - Create new retro' },
@@ -18,13 +20,26 @@ type ActionData = z.infer<typeof actionDataSchema>
 export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
 	const formData = await request.formData()
 
-	const column = formData.getAll('column')
+	const columns = formData.getAll('column') as string[]
+	const retroCategories = columns.map((column) => ({ name: column }))
 
-	console.log('column ', column)
+	try {
+		const newRetro = await db.retro.create({
+			data: {
+				team: 'Disturbed',
+				categories: {
+					create: retroCategories,
+				},
+			},
+		})
 
-	// create a new retro in db, get its id
-
-	return { retroId: '1234' }
+		console.log('newRetro ', newRetro)
+		return { retroId: newRetro.id }
+	} catch (error) {
+		console.log(error)
+		// TODO add error handling
+		return null
+	}
 }
 
 const createRetroPropsSchema = z.object({

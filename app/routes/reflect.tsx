@@ -1,6 +1,8 @@
 import { type MetaFunction, type LoaderFunctionArgs, data } from 'react-router'
 import { z } from 'zod'
 
+import { db } from '~/lib/db.server'
+
 import { BoardColumn } from '~/components/BoardColumn'
 
 export const meta: MetaFunction = () => {
@@ -23,17 +25,24 @@ const loaderDataSchema = z.object({
 export async function loader({ params }: LoaderFunctionArgs) {
 	const { id } = params
 
-	// get columns by retro id
-
-	console.log('Retro ID - ', id)
-
-	return data({
-		columns: [
-			{ id: '1', name: 'What went well' },
-			{ id: '2', name: 'What went wrong' },
-			{ id: '3', name: 'Gratitudes' },
-		],
-	})
+	try {
+		const columns = await db.category.findMany({
+			where: {
+				retroId: id,
+			},
+		})
+		return data({ columns })
+	} catch (error) {
+		console.log(error)
+		// TODO create an error boundary
+		return data({
+			columns: [
+				{ id: '1', name: 'Something' },
+				{ id: '2', name: 'Went' },
+				{ id: '3', name: 'Wrong' },
+			],
+		})
+	}
 }
 
 const boardPropsSchema = z.object({
