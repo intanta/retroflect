@@ -1,4 +1,4 @@
-import { Form } from 'react-router'
+import { useFetcher } from 'react-router'
 import { useEffect, useRef } from 'react'
 import { z } from 'zod'
 
@@ -15,11 +15,10 @@ const newColumnPropsSchema = z.object({
 type NewColumnProps = z.infer<typeof newColumnPropsSchema>
 
 export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
+	const fetcher = useFetcher()
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	const handleSave = (e: any) => {
-		e.preventDefault()
-
 		const formData = new FormData(e.currentTarget)
 		const comment = formData.get('comment') as string
 
@@ -33,7 +32,7 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 	}, [])
 
 	return (
-		<Form
+		<fetcher.Form
 			className="bg-amber-200 p-1"
 			action="add-comment"
 			method="post"
@@ -57,6 +56,6 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 					<TrashIcon className="text-slate-800" />
 				</button>
 			</div>
-		</Form>
+		</fetcher.Form>
 	)
 }

@@ -1,12 +1,16 @@
 import {
 	type MetaFunction,
 	type LoaderFunctionArgs,
+	type ActionFunctionArgs,
 	data,
+	useFetcher,
 	useRouteError,
 	redirect,
 } from 'react-router'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { z } from 'zod'
+
+import { db } from '~/lib/db.server'
 
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
@@ -61,49 +65,73 @@ const loaderDataSchema = z.object({
 })
 
 export async function loader({ params }: LoaderFunctionArgs) {
+	// TODO error handling
 	const { id } = params
 
-	// TODO get retro status
-	const retroStatus = 'reflect'
+	const retro = await db.retro.findUnique({
+		where: {
+			id,
+		},
+		select: {
+			status: true,
+		},
+	})
 
-	console.log('retroStatus ', retroStatus)
+	console.log('Vote route - retroStatus ', retro?.status)
 
-	if (retroStatus === 'reflect') {
+	if (retro?.status === 'REFLECT') {
 		throw data({
 			message: 'Please wait, your retro board is not ready for voting yet.',
 		})
 	}
 
-	if (retroStatus === 'review') {
-		return redirect('review')
+	if (retro?.status === 'REVIEW') {
+		return redirect(`/board/${id}/review`)
 	}
 
-	// get columns with comments by retro id
-
-	console.log('Retro ID - ', id)
+	const columns = await db.category.findMany({
+		where: {
+			retroId: id,
+		},
+		include: {
+			comments: true,
+		},
+	})
 
 	return data({
-		columns: [
-			{
-				id: '1',
-				name: 'What went well',
-				comments: [
-					{ id: '11', text: 'comment 11' },
-					{ id: '12', text: 'comment 12' },
-				],
-			},
-			{
-				id: '2',
-				name: 'What went wrong',
-				comments: [
-					{ id: '21', text: 'comment 21' },
-					{ id: '22', text: 'comment 22' },
-					{ id: '23', text: 'comment 23' },
-				],
-			},
-			{ id: '3', name: 'Gratitudes', comments: [{ id: '31', text: 'comment 31' }] },
-		],
+		columns,
 	})
+}
+
+const actionDataSchema = z.object({
+	success: z.boolean(),
+	error: z.string().nullable(),
+})
+type ActionData = z.infer<typeof actionDataSchema>
+
+export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
+	console.log('vote action')
+	const formData = await request.formData()
+
+	const commentId = formData.get('commentId') as string
+
+	try {
+		await db.comment.update({
+			where: {
+				id: commentId,
+			},
+			data: {
+				votes: {
+					increment: 1,
+				},
+			},
+		})
+
+		return { success: true, error: null }
+	} catch (error) {
+		console.log(error)
+		return { success: false, error: 'Error while updating votes for a comment' }
+	}
 }
 
 const votePropsSchema = z.object({
@@ -115,10 +143,12 @@ export default function Vote({ loaderData }: VoteProps) {
 	const { columns } = loaderData
 
 	const [upvotedComments, setUpvotedComments] = useState<string[]>([])
-	const [votesLeft, setVotesLeft] = useState<number>(5)
+	const [votesLeft, setVotesLeft] = useState<number>(3)
+	const fetcher = useFetcher()
 
-	const handleVote = (commentId: string) => {
+	const handleVote = (e: any, commentId: string) => {
 		if (votesLeft === 0 || upvotedComments.includes(commentId)) {
+			e.preventDefault()
 			return
 		}
 
@@ -126,12 +156,16 @@ export default function Vote({ loaderData }: VoteProps) {
 		setVotesLeft((prevVotesLeft) => prevVotesLeft - 1)
 	}
 
+	// TODO maybe return comments ordered by createdAt, because when we vote the order of cards changes
+	// memoizing for now as a hack
+	const columnsToRender = useMemo(() => columns, [])
+
 	return (
 		<>
-			<p>Votes left: {votesLeft}</p>
-			{columns?.length ? (
+			<p className="py-2">Votes left: {votesLeft}</p>
+			{columnsToRender?.length ? (
 				<div className="grid grid-cols-3 gap-4">
-					{columns.map((column) => (
+					{columnsToRender.map((column) => (
 						<div key={column.id} className="flex flex-col">
 							<div className="py-3 bg-slate-800 mb-2">
 								<h2 className="text-center text-white">{column.name}</h2>
@@ -145,7 +179,8 @@ export default function Vote({ loaderData }: VoteProps) {
 										key={comment.id}
 										id={comment.id}>
 										{comment.text}
-										<div className="text-right">
+										<fetcher.Form method="post" className="text-right">
+											<input type="hidden" name="commentId" value={comment.id} />
 											<button
 												aria-label="Vote for the comment"
 												aria-describedby={comment.id}
@@ -154,13 +189,12 @@ export default function Vote({ loaderData }: VoteProps) {
 														? 'cursor-default'
 														: 'cursor-pointer'
 												}
-												onClick={() => handleVote(comment.id)}
-												type="button">
+												onClick={(e) => handleVote(e, comment.id)}>
 												<ThumbsUpIcon
-													className={isUpvoted ? 'text-slate-800' : 'text-slate-500'}
+													className={isUpvoted ? 'text-slate-800' : 'text-slate-400'}
 												/>
 											</button>
-										</div>
+										</fetcher.Form>
 									</div>
 								)
 							})}

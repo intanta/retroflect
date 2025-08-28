@@ -1,7 +1,14 @@
-import { type MetaFunction, type ActionFunctionArgs, Form, Link } from 'react-router'
+import {
+	type MetaFunction,
+	type ActionFunctionArgs,
+	Form,
+	Link,
+	data,
+} from 'react-router'
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
+import { isHostCookie } from '~/utils/cookie'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -17,7 +24,7 @@ const actionDataSchema = z
 	.nullable()
 type ActionData = z.infer<typeof actionDataSchema>
 
-export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
+export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData()
 
 	const columns = formData.getAll('column') as string[]
@@ -34,7 +41,14 @@ export async function action({ request }: ActionFunctionArgs): Promise<ActionDat
 		})
 
 		console.log('newRetro ', newRetro)
-		return { retroId: newRetro.id }
+		return data(
+			{ retroId: newRetro.id },
+			{
+				headers: {
+					'Set-Cookie': await isHostCookie.serialize(true, { maxAge: 1800 }),
+				},
+			},
+		)
 	} catch (error) {
 		console.log(error)
 		// TODO add error handling
