@@ -34,7 +34,7 @@ export function BoardColumn({ id, name }: BoardColumnProps) {
 
 	return (
 		<div className="py-3">
-			<div className="flex justify-center gap-2 bg-slate-800 py-3 mb-2">
+			<div className="flex justify-center gap-2 bg-slate-800 py-3 mb-4">
 				<h2 className="text-white">{name}</h2>
 				<button
 					aria-label={`Add new comment under ${name}`}
@@ -47,7 +47,7 @@ export function BoardColumn({ id, name }: BoardColumnProps) {
 
 			{savedComments.map((comment, i) => {
 				return (
-					<div className="bg-amber-200 p-2 text-sm mb-2 shadow-md" key={i}>
+					<div className="bg-lime-200 p-2 font-sans mb-4 shadow-md" key={i}>
 						{comment}
 					</div>
 				)
