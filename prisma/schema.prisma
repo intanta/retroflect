@@ -33,7 +33,7 @@ enum Status {
 model Category {
   id        String   @id @default(uuid())
   name      String
-  retro     Retro    @relation(fields: [retroId], references: [id])
+  retro     Retro    @relation(fields: [retroId], references: [id], onDelete: Cascade)
   retroId   String
   comments  Comment[]
 }
@@ -42,7 +42,7 @@ model Comment {
   id          String    @id @default(uuid())
   text        String
   votes       Int       @default(0)
-  category    Category  @relation(fields: [categoryId], references: [id])
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId  String
 }
 

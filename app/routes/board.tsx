@@ -109,7 +109,7 @@ export default function Board({ loaderData }: BoardProps) {
 	return (
 		<div className="flex h-screen flex-col p-5">
 			<div className="flex justify-between py-5 border-b">
-				<h1 className="text-xl">{config[status].heading}</h1>
+				<h1 className="text-2xl font-bold">{config[status].heading}</h1>
 				{isHost && config[status].link ? (
 					<Form method="post">
 						<input type="hidden" name="retroStatus" value={status} />

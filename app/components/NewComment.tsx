@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { CheckIcon } from './Icons/CheckIcon'
 import { TrashIcon } from './Icons/TrashIcon'
+import { EmojiPicker } from './EmojiPicker'
 
 const newColumnPropsSchema = z.object({
 	columnId: z.string(),
@@ -22,6 +23,11 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 		const formData = new FormData(e.currentTarget)
 		const comment = formData.get('comment') as string
 
+		if (!comment) {
+			e.preventDefault()
+			return
+		}
+
 		onSave(comment)
 	}
 
@@ -31,18 +37,29 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 		}
 	}, [])
 
+	const handlePickEmoji = (emoji: string) => {
+		console.log('emoji picked')
+		if (textareaRef.current) {
+			textareaRef.current.value = textareaRef.current.value + emoji
+			textareaRef.current.focus()
+		}
+	}
+
 	return (
 		<fetcher.Form
-			className="bg-amber-200 p-1"
+			className="bg-lime-200 p-1"
 			action="add-comment"
 			method="post"
 			onSubmit={handleSave}>
-			<textarea
-				aria-label="Comment"
-				className="block w-full text-sm p-1"
-				name="comment"
-				ref={textareaRef}
-			/>
+			<div className="relative">
+				<textarea
+					aria-label="Comment"
+					className="block w-full h-20 border border-slate-600 rounded font-sans p-1 pr-8"
+					name="comment"
+					ref={textareaRef}
+				/>
+				<EmojiPicker className="bottom-1 right-2" onPick={handlePickEmoji} />
+			</div>
 			<input type="hidden" name="columnId" value={columnId} />
 			<div className="flex justify-between pt-2">
 				<button aria-label="Save" className="cursor-pointer">
