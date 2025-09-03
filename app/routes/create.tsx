@@ -27,13 +27,16 @@ type ActionData = z.infer<typeof actionDataSchema>
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData()
 
+	const team = formData.get('team') as string
+	const sprint = formData.get('sprint') as string
 	const columns = formData.getAll('column') as string[]
 	const retroCategories = columns.map((column) => ({ name: column }))
 
 	try {
 		const newRetro = await db.retro.create({
 			data: {
-				team: 'Disturbed',
+				team: team ?? 'Unknown team',
+				sprint: sprint ?? null,
 				categories: {
 					create: retroCategories,
 				},
@@ -45,7 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			{ retroId: newRetro.id },
 			{
 				headers: {
-					'Set-Cookie': await isHostCookie.serialize(true, { maxAge: 1800 }),
+					'Set-Cookie': await isHostCookie.serialize(true, { maxAge: 7200 }), // setting for 2 hours (TODO remove cookie when closing retro)
 				},
 			},
 		)

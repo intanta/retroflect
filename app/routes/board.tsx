@@ -59,7 +59,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	const stepsMapping: any = {
 		REFLECT: 'VOTE',
 		VOTE: 'REVIEW',
-		REVIEW: null,
+		REVIEW: 'CLOSED',
 	}
 	const nextRetroStep = stepsMapping[retroStatus]
 
@@ -72,6 +72,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				status: nextRetroStep,
 			},
 		})
+
+		// TODO handle this better
+		if (nextRetroStep === 'CLOSED') {
+			return redirect('/closed')
+		}
 
 		return redirect(nextRetroStep.toLowerCase())
 	}
@@ -90,15 +95,18 @@ export default function Board({ loaderData }: BoardProps) {
 	const config: any = {
 		REFLECT: {
 			heading: "Let's reflect",
-			link: 'vote',
+			ctaLabel: 'Go to the next step',
+			ctaLink: 'vote',
 		},
 		VOTE: {
 			heading: "Let's vote",
-			link: 'review',
+			ctaLabel: 'Go to the next step',
+			ctaLink: 'review',
 		},
 		REVIEW: {
 			heading: "Let's discuss",
-			link: null,
+			ctaLabel: 'Complete retro',
+			ctaLink: null,
 		},
 	}
 
@@ -110,21 +118,21 @@ export default function Board({ loaderData }: BoardProps) {
 		<div className="flex h-screen flex-col p-5">
 			<div className="flex justify-between py-5 border-b">
 				<h1 className="text-2xl font-bold">{config[status].heading}</h1>
-				{isHost && config[status].link ? (
+				{isHost ? (
 					<Form method="post">
 						<input type="hidden" name="retroStatus" value={status} />
 						<button
 							className="text-slate-800 text-lg font-bold underline cursor-pointer"
 							type="submit">
-							Go to the next step
+							{config[status].ctaLabel}
 						</button>
 					</Form>
 				) : null}
-				{!isHost && config[status].link ? (
+				{!isHost && config[status].ctaLink ? (
 					<Link
 						className="text-slate-800 text-lg font-bold underline"
-						to={config[status].link}>
-						Go to the next step
+						to={config[status].ctaLink}>
+						{config[status].ctaLabel}
 					</Link>
 				) : null}
 			</div>

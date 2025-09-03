@@ -11,4 +11,5 @@ export default [
 		route('vote', './routes/vote.tsx'),
 		route('review', './routes/review.tsx'),
 	]),
+	route('closed', './routes/closed.tsx'),
 ] satisfies RouteConfig

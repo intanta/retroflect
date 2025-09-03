@@ -143,7 +143,7 @@ export default function Vote({ loaderData }: VoteProps) {
 	const { columns } = loaderData
 
 	const [upvotedComments, setUpvotedComments] = useState<string[]>([])
-	const [votesLeft, setVotesLeft] = useState<number>(3)
+	const [votesLeft, setVotesLeft] = useState<number>(5)
 	const fetcher = useFetcher()
 
 	const handleVote = (e: any, commentId: string) => {
@@ -167,7 +167,7 @@ export default function Vote({ loaderData }: VoteProps) {
 				<div className="grid grid-cols-3 gap-4">
 					{columnsToRender.map((column) => (
 						<div key={column.id} className="flex flex-col">
-							<div className="py-3 bg-slate-800 mb-2">
+							<div className="py-3 bg-slate-800 mb-4">
 								<h2 className="text-center text-white">{column.name}</h2>
 							</div>
 							{column.comments.map((comment) => {
@@ -175,7 +175,7 @@ export default function Vote({ loaderData }: VoteProps) {
 
 								return (
 									<div
-										className="bg-amber-200 p-2 text-sm mb-2 shadow-md"
+										className="bg-lime-200 p-2 font-sans mb-4 shadow-md"
 										key={comment.id}
 										id={comment.id}>
 										{comment.text}
