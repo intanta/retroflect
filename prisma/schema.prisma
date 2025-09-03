@@ -16,18 +16,20 @@ datasource db {
 }
 
 model Retro {
-  id         String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  team       String 
-  status     Status   @default(REFLECT)
-  sprint     String?
-  categories Category[]
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  team         String 
+  status       Status   @default(REFLECT)
+  sprint       String?
+  categories   Category[]
+  actionItems  Action[]
 }
 
 enum Status {
   REFLECT
   VOTE
   REVIEW
+  CLOSED
 }
 
 model Category {
@@ -40,10 +42,19 @@ model Category {
 
 model Comment {
   id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
   text        String
   votes       Int       @default(0)
   category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId  String
+}
+
+model Action {
+  id          String    @id @default(uuid())
+  text        String
+  assignee    String
+  retro       Retro     @relation(fields: [retroId], references: [id], onDelete: Cascade)
+  retroId     String
 }
 
 
