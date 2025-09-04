@@ -6,7 +6,7 @@ import {
 	useFetcher,
 	useRouteError,
 } from 'react-router'
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
@@ -137,8 +137,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export async function action({ params, request }: ActionFunctionArgs) {
-	console.log('review action')
-
 	if (!params.id) {
 		return null
 	}
@@ -176,9 +174,34 @@ export default function Review({ loaderData }: ReviewProps) {
 
 	const fetcher = useFetcher()
 	const actionPopoverRef = useRef(null)
+	const actionFormRef = useRef(null)
 
 	const [current, setCurrent] = useState(0)
 	const [actionItems, setActionItems] = useState<ActionItemList>([])
+
+	// TODO fix!!!
+	useEffect(() => {
+		const handleBeforeToggle = (e: any) => {
+			if (e.newState === 'open') {
+				if (actionFormRef.current) {
+					actionFormRef.current.reset()
+				}
+			}
+		}
+
+		if (actionPopoverRef.current && actionFormRef.current) {
+			actionPopoverRef.current.addEventListener('beforetoggle', handleBeforeToggle)
+		}
+
+		return () => {
+			if (actionPopoverRef.current) {
+				actionPopoverRef.current.removeEventListener(
+					'beforetoggle',
+					handleBeforeToggle,
+				)
+			}
+		}
+	}, [])
 
 	if (!comments?.length) {
 		return (
@@ -230,7 +253,6 @@ export default function Review({ loaderData }: ReviewProps) {
 		])
 
 		hideActionPopover()
-		e.currentTarget.reset()
 	}
 
 	const isPrevDisabled = current === 0
@@ -274,7 +296,7 @@ export default function Review({ loaderData }: ReviewProps) {
 					{comments.map((comment, i) => {
 						return (
 							<div
-								className={`w-full h-full bg-lime-200 p-2 font-sans mb-2 shadow-md ${current === i ? 'block' : 'hidden'}`}
+								className={`w-full h-full bg-lime-200 p-2 font-sans mb-2 shadow-md overflow-y-scroll ${current === i ? 'block' : 'hidden'}`}
 								key={i}>
 								<div className="flex justify-between pb-5">
 									<span className="inline-block mb-2 py-1.5 px-2 rounded text-sm text-right text-slate-700 border border-slate-700">
@@ -327,7 +349,8 @@ export default function Review({ loaderData }: ReviewProps) {
 								<fetcher.Form
 									method="post"
 									className="w-[500px] p-5"
-									onSubmit={handleSave}>
+									onSubmit={handleSave}
+									ref={actionFormRef}>
 									{/* <input type="hidden" name="retroId" value={retroId} /> */}
 									<label htmlFor="action">Action item</label>
 									<textarea
