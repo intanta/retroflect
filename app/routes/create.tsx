@@ -9,7 +9,6 @@ import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
 import { getSession, commitSession } from '~/lib/session.server'
-import { isHostCookie } from '~/utils/cookie'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -62,7 +61,6 @@ export async function action({ request }: ActionFunctionArgs) {
 			{ retroId: newRetro.id },
 			{
 				headers: {
-					//'Set-Cookie': await isHostCookie.serialize(true, { maxAge: 7200 }), // setting for 2 hours (TODO remove cookie when closing retro)
 					'Set-Cookie': await commitSession(session),
 				},
 			},

@@ -10,12 +10,11 @@ import { useEffect, useState, useRef } from 'react'
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
+import { getSession } from '~/lib/session.server'
 
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { ChevronIcon } from '~/components/Icons/ChevronIcon'
-
-import { isHostCookie } from '~/utils/cookie'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -123,10 +122,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			],
 		})
 
-		const cookieHeader = request.headers.get('Cookie')
-		const cookie = (await isHostCookie.parse(cookieHeader)) || null
+		const session = await getSession(request.headers.get('Cookie'))
 
-		return data({ isHost: Boolean(cookie), comments })
+		return data({ isHost: session.get('isHost'), comments })
 	} catch (error) {
 		console.log(error)
 		// TODO create an error boundary
