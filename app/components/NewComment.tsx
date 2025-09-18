@@ -57,7 +57,7 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 					className="block w-full h-20 border border-slate-600 rounded font-sans p-1 pr-8"
 					name="comment"
 					ref={textareaRef}
-					maxLength={150}
+					maxLength={450}
 				/>
 				<EmojiPicker className="bottom-1 right-2" onPick={handlePickEmoji} />
 			</div>

@@ -8,6 +8,7 @@ import {
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
+import { getSession, commitSession } from '~/lib/session.server'
 import { isHostCookie } from '~/utils/cookie'
 
 export const meta: MetaFunction = () => {
@@ -43,12 +44,26 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		})
 
+		const hostUser = await db.user.create({
+			data: {
+				retroId: newRetro.id,
+			},
+		})
+
 		console.log('newRetro ', newRetro)
+		console.log('hostUser ', hostUser)
+
+		const session = await getSession(request.headers.get('Cookie'))
+
+		session.set('userId', hostUser.id)
+		session.set('isHost', true)
+
 		return data(
 			{ retroId: newRetro.id },
 			{
 				headers: {
-					'Set-Cookie': await isHostCookie.serialize(true, { maxAge: 7200 }), // setting for 2 hours (TODO remove cookie when closing retro)
+					//'Set-Cookie': await isHostCookie.serialize(true, { maxAge: 7200 }), // setting for 2 hours (TODO remove cookie when closing retro)
+					'Set-Cookie': await commitSession(session),
 				},
 			},
 		)
@@ -72,10 +87,11 @@ export default function Create({ actionData }: CreateRetroProps) {
 			<h1 className="text-3xl text-slate-800 font-bold">Create a new Retro board</h1>
 			{retroId ? (
 				<>
-					<p>
-						Your retro board has been created. Please share the link below with your
+					<p className="py-2">
+						Your retro board has been created. Please share the code below with your
 						team
 					</p>
+					<p className="text-2xl pb-3">{retroId}</p>
 					<Link
 						className="text-slate-800 text-lg font-bold underline"
 						to={`/board/${retroId}/reflect`}>
