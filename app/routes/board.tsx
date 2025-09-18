@@ -7,10 +7,13 @@ import {
 	Link,
 	Outlet,
 	redirect,
+	useParams,
 } from 'react-router'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
+import { supabase } from '~/lib/supabase'
 import { isHostCookie } from '~/utils/cookie'
 
 export const meta: MetaFunction = () => {
@@ -90,7 +93,37 @@ const boardPropsSchema = z.object({
 type BoardProps = z.infer<typeof boardPropsSchema>
 
 export default function Board({ loaderData }: BoardProps) {
+	const [isNextStepAvailable, setIsNextStepAvailable] = useState(false)
+	const urlParams = useParams()
+	const retroId = urlParams.id
 	const { status, isHost } = loaderData
+
+	useEffect(() => {
+		supabase
+			.channel('retro_changes')
+			.on(
+				'postgres_changes',
+				{
+					event: 'UPDATE',
+					schema: 'public',
+					table: 'Retro',
+					filter: `id=eq.${retroId}`,
+				},
+				(payload) => {
+					if (payload.new.status !== status) {
+						console.log('retro status changed to ', payload.new.status)
+						setIsNextStepAvailable(true)
+					}
+				},
+			)
+			.subscribe((status) => {
+				console.log(status)
+			})
+	}, [])
+
+	useEffect(() => {
+		setIsNextStepAvailable(false)
+	}, [status])
 
 	const config: any = {
 		REFLECT: {
@@ -128,7 +161,7 @@ export default function Board({ loaderData }: BoardProps) {
 						</button>
 					</Form>
 				) : null}
-				{!isHost && config[status].ctaLink ? (
+				{!isHost && isNextStepAvailable && config[status].ctaLink ? (
 					<Link
 						className="text-slate-800 text-lg font-bold underline"
 						to={config[status].ctaLink}>
