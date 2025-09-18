@@ -7,6 +7,7 @@ export default [
 	route('board/:id', './routes/board.tsx', [
 		route('reflect', './routes/reflect.tsx', [
 			route('add-comment', './routes/add-comment.ts'),
+			route('delete-comment', './routes/delete-comment.ts'),
 		]),
 		route('vote', './routes/vote.tsx'),
 		route('review', './routes/review.tsx'),

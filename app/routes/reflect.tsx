@@ -2,6 +2,7 @@ import { type MetaFunction, type LoaderFunctionArgs, data } from 'react-router'
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
+import { getSession } from '~/lib/session.server'
 
 import { BoardColumn } from '~/components/BoardColumn'
 
@@ -18,20 +19,41 @@ const columnSchema = z.object({
 })
 const columnListSchema = z.array(columnSchema)
 
+const commentSchema = z.object({
+	id: z.string(),
+	text: z.string(),
+	categoryId: z.string(),
+})
+const commentsListSchema = z.array(commentSchema)
+
 const loaderDataSchema = z.object({
 	columns: columnListSchema,
+	comments: commentsListSchema,
 })
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
 	const { id } = params
 
 	try {
+		const session = await getSession(request.headers.get('Cookie'))
+
 		const columns = await db.category.findMany({
 			where: {
 				retroId: id,
 			},
 		})
-		return data({ columns })
+		const comments = await db.comment.findMany({
+			where: {
+				userId: session.get('userId'),
+			},
+			orderBy: [
+				{
+					createdAt: 'asc',
+				},
+			],
+		})
+		console.log(comments)
+		return data({ columns, comments })
 	} catch (error) {
 		console.log(error)
 		// TODO create an error boundary
@@ -51,12 +73,17 @@ const boardPropsSchema = z.object({
 type BoardProps = z.infer<typeof boardPropsSchema>
 
 export default function Reflect({ loaderData }: BoardProps) {
-	const { columns } = loaderData
+	const { columns, comments } = loaderData
 
 	return columns?.length ? (
 		<div className="grid grid-cols-3 gap-4">
 			{columns.map((column) => (
-				<BoardColumn key={column.id} id={column.id} name={column.name} />
+				<BoardColumn
+					key={column.id}
+					id={column.id}
+					name={column.name}
+					comments={comments?.filter((comment) => comment.categoryId === column.id)}
+				/>
 			))}
 		</div>
 	) : null

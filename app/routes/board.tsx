@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
+import { getSession } from '~/lib/session.server'
 import { supabase } from '~/lib/supabase'
 import { isHostCookie } from '~/utils/cookie'
 
@@ -40,11 +41,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	console.log('Retro ID - ', id)
 
-	const cookieHeader = request.headers.get('Cookie')
-	const cookie = (await isHostCookie.parse(cookieHeader)) || null
+	const session = await getSession(request.headers.get('Cookie'))
 
 	return data({
-		isHost: Boolean(cookie),
+		isHost: session.get('isHost'),
 		status: retro?.status,
 	})
 }
@@ -139,7 +139,7 @@ export default function Board({ loaderData }: BoardProps) {
 		REVIEW: {
 			heading: "Let's discuss",
 			ctaLabel: 'Complete retro',
-			ctaLink: null,
+			ctaLink: '/closed',
 		},
 	}
 
