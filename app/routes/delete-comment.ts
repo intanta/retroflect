@@ -10,7 +10,6 @@ const actionDataSchema = z.object({
 type ActionData = z.infer<typeof actionDataSchema>
 
 export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
-	console.log('delete-comment action')
 	const formData = await request.formData()
 
 	const commentId = formData.get('comment-id') as string
@@ -24,7 +23,9 @@ export async function action({ request }: ActionFunctionArgs): Promise<ActionDat
 
 		return { success: true, error: null }
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('delete comment: ', error.message)
+		}
 		return { success: false, error: 'Error while deleting a comment' }
 	}
 }

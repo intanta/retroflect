@@ -11,7 +11,6 @@ const actionDataSchema = z.object({
 type ActionData = z.infer<typeof actionDataSchema>
 
 export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
-	console.log('add-comment action')
 	const formData = await request.formData()
 
 	const comment = formData.get('comment') as string
@@ -30,7 +29,9 @@ export async function action({ request }: ActionFunctionArgs): Promise<ActionDat
 
 		return { success: true, error: null }
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('add comment: ', error.message)
+		}
 		return { success: false, error: 'Error while saving a comment' }
 	}
 }

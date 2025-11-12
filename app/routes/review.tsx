@@ -86,8 +86,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			},
 		})
 
-		console.log('Review route - retroStatus ', retro?.status)
-
 		if (retro?.status !== 'REVIEW') {
 			throw data({
 				message: 'Please wait, your retro board is not ready for review yet.',
@@ -126,7 +124,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 		return data({ isHost: session.get('isHost'), comments })
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('review: ', error.message)
+		}
 		// TODO create an error boundary
 		return data({
 			comments: [],
@@ -156,7 +156,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
 
 		return { success: true, error: null }
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('add action item: ', error.message)
+		}
 		return { success: false, error: 'Error while adding an action item' }
 	}
 }
@@ -168,7 +170,6 @@ type ReviewProps = z.infer<typeof reviewPropsSchema>
 
 export default function Review({ loaderData }: ReviewProps) {
 	const { comments, isHost } = loaderData
-	console.log(comments)
 
 	const fetcher = useFetcher()
 	const actionPopoverRef = useRef(null)

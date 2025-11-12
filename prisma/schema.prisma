@@ -22,7 +22,6 @@ model Retro {
   status       Status   @default(REFLECT)
   sprint       String?
   categories   Category[]
-  users        User[]
   actionItems  Action[]
 }
 
@@ -41,13 +40,6 @@ model Category {
   comments  Comment[]
 }
 
-model User {
-  id        String   @id @default(uuid())
-  retro     Retro    @relation(fields: [retroId], references: [id], onDelete: Cascade)
-  retroId   String
-  comments  Comment[]
-}
-
 model Comment {
   id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
@@ -55,7 +47,6 @@ model Comment {
   votes       Int       @default(0)
   category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId  String
-  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
 }
 

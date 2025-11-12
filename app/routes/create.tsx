@@ -31,6 +31,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	const sprint = formData.get('sprint') as string
 	const columns = formData.getAll('column') as string[]
 	const retroCategories = columns.map((column) => ({ name: column }))
+	const userId = formData.get('uuid') as string
 
 	try {
 		const newRetro = await db.retro.create({
@@ -43,18 +44,15 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		})
 
-		const hostUser = await db.user.create({
-			data: {
-				retroId: newRetro.id,
-			},
-		})
-
-		console.log('newRetro ', newRetro)
-		console.log('hostUser ', hostUser)
+		// const hostUser = await db.user.create({
+		// 	data: {
+		// 		retroId: newRetro.id,
+		// 	},
+		// })
 
 		const session = await getSession(request.headers.get('Cookie'))
 
-		session.set('userId', hostUser.id)
+		session.set('userId', userId)
 		session.set('isHost', true)
 
 		return data(
@@ -66,7 +64,9 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		)
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('retro create: ', error.message)
+		}
 		// TODO add error handling
 		return null
 	}
@@ -133,6 +133,7 @@ export default function Create({ actionData }: CreateRetroProps) {
 							defaultValue="Gratitudes"
 						/>
 					</fieldset>
+					<input type="hidden" name="uuid" value={crypto.randomUUID()} />
 					<div className="text-center">
 						<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white">
 							Create Retro Board
