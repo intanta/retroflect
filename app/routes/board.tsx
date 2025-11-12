@@ -15,7 +15,6 @@ import { z } from 'zod'
 import { db } from '~/lib/db.server'
 import { getSession } from '~/lib/session.server'
 import { supabase } from '~/lib/supabase'
-import { isHostCookie } from '~/utils/cookie'
 
 export const meta: MetaFunction = () => {
 	return [{ title: 'Retroflect - Retro in progress' }]
@@ -39,8 +38,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		},
 	})
 
-	console.log('Retro ID - ', id)
-
 	const session = await getSession(request.headers.get('Cookie'))
 
 	return data({
@@ -55,8 +52,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	const formData = await request.formData()
 
 	const retroStatus = formData.get('retroStatus') as string
-
-	console.log('retroStatus ', retroStatus)
 
 	// TODO ts-pattern; rename status to step?; typescript this duh
 	const stepsMapping: any = {
@@ -143,6 +138,7 @@ export default function Board({ loaderData }: BoardProps) {
 		},
 	}
 
+	// TODO make this Error boundary
 	if (!config[status]) {
 		return <p>Oops, something went terribly wrong, no retro, sorry</p>
 	}

@@ -77,8 +77,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		},
 	})
 
-	console.log('Vote route - retroStatus ', retro?.status)
-
 	if (retro?.status === 'REFLECT') {
 		throw data({
 			message: 'Please wait, your retro board is not ready for voting yet.',
@@ -110,7 +108,6 @@ const actionDataSchema = z.object({
 type ActionData = z.infer<typeof actionDataSchema>
 
 export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
-	console.log('vote action')
 	const formData = await request.formData()
 
 	const commentId = formData.get('commentId') as string
@@ -129,7 +126,9 @@ export async function action({ request }: ActionFunctionArgs): Promise<ActionDat
 
 		return { success: true, error: null }
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('vote: ', error.message)
+		}
 		return { success: false, error: 'Error while updating votes for a comment' }
 	}
 }

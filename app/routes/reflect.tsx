@@ -52,10 +52,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 				},
 			],
 		})
-		console.log(comments)
+
 		return data({ columns, comments })
 	} catch (error) {
-		console.log(error)
+		if (error instanceof Error) {
+			console.log('reflect: ', error.message)
+		}
 		// TODO create an error boundary
 		return data({
 			columns: [
