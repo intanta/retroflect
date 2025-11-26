@@ -5,10 +5,7 @@ export default [
 	route('create', './routes/create.tsx'),
 	route('join', './routes/join.tsx'),
 	route('board/:id', './routes/board.tsx', [
-		route('reflect', './routes/reflect.tsx', [
-			route('add-comment', './routes/add-comment.ts'),
-			route('delete-comment', './routes/delete-comment.ts'),
-		]),
+		route('reflect', './routes/reflect.tsx'),
 		route('vote', './routes/vote.tsx'),
 		route('review', './routes/review.tsx'),
 	]),

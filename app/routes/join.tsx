@@ -24,13 +24,6 @@ export async function action({ request }: ActionFunctionArgs) {
 	console.log('user id ', userId)
 
 	try {
-		// const newUser = await db.user.create({
-		// 	data: {
-		// 		retroId,
-		// 	},
-		// })
-
-		// console.log('newUser ', newUser)
 		const retro = await db.retro.findUnique({
 			where: {
 				id: retroId.trim(),

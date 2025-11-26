@@ -2,12 +2,14 @@ import { useFetcher } from 'react-router'
 import { useEffect, useRef } from 'react'
 import { z } from 'zod'
 
-import { CheckIcon } from './Icons/CheckIcon'
+import { SendIcon } from './Icons/SendIcon'
 import { TrashIcon } from './Icons/TrashIcon'
 import { EmojiPicker } from './EmojiPicker'
 
 const newColumnPropsSchema = z.object({
 	columnId: z.string(),
+	commentId: z.string().optional(),
+	currentText: z.string().optional(),
 	onDiscard: z.function(),
 	onSave: z.function({
 		input: [z.string()],
@@ -15,8 +17,14 @@ const newColumnPropsSchema = z.object({
 })
 type NewColumnProps = z.infer<typeof newColumnPropsSchema>
 
-export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
-	const fetcher = useFetcher()
+export function NewComment({
+	columnId,
+	commentId,
+	currentText,
+	onSave,
+	onDiscard,
+}: NewColumnProps) {
+	const fetcher = useFetcher({ key: 'saveComment' })
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	const handleSave = (e: any) => {
@@ -38,7 +46,6 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 	}, [])
 
 	const handlePickEmoji = (emoji: string) => {
-		console.log('emoji picked')
 		if (textareaRef.current) {
 			textareaRef.current.value = textareaRef.current.value + emoji
 			textareaRef.current.focus()
@@ -47,31 +54,37 @@ export function NewComment({ columnId, onSave, onDiscard }: NewColumnProps) {
 
 	return (
 		<fetcher.Form
-			className="bg-lime-200 p-1"
-			action="add-comment"
+			className="bg-lime-200 p-6 pb-4 mb-4"
 			method="post"
 			onSubmit={handleSave}>
 			<div className="relative">
 				<textarea
 					aria-label="Comment"
-					className="block w-full h-20 border border-slate-600 rounded font-sans p-1 pr-8"
+					className="block w-full h-20 border border-slate-600 rounded bg-white font-sans p-1 pr-8"
 					name="comment"
 					ref={textareaRef}
 					maxLength={450}
+					defaultValue={currentText ?? ''}
 				/>
 				<EmojiPicker className="bottom-1 right-2" onPick={handlePickEmoji} />
 			</div>
 			<input type="hidden" name="columnId" value={columnId} />
-			<div className="flex justify-between pt-2">
-				<button aria-label="Save" className="cursor-pointer">
-					<CheckIcon className="fill-slate-800" />
-				</button>
+			{commentId ? <input type="hidden" name="commentId" value={commentId} /> : null}
+			<div className="flex justify-between pt-6">
 				<button
 					aria-label="Discard"
-					className="cursor-pointer"
+					className="border border-slate-800 rounded-md p-2 text-sm cursor-pointer"
 					onClick={onDiscard}
 					type="button">
-					<TrashIcon className="text-slate-800" />
+					Cancel
+					{/* <TrashIcon className="size-5 text-slate-800" /> */}
+				</button>
+				<button
+					aria-label="Save"
+					className="p-2 rounded-md bg-slate-800 cursor-pointer"
+					name="_intent"
+					value={currentText ? 'edit' : 'add'}>
+					<SendIcon className="size-5 text-white" />
 				</button>
 			</div>
 		</fetcher.Form>
