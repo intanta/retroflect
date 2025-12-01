@@ -15,6 +15,8 @@ import { db } from '~/lib/db.server'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 
+import { logError } from '~/utils/helpers'
+
 export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Retroflect - Voting' },
@@ -101,16 +103,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	})
 }
 
-const actionDataSchema = z.object({
-	success: z.boolean(),
-	error: z.string().nullable(),
-})
-type ActionData = z.infer<typeof actionDataSchema>
-
-export async function action({ request }: ActionFunctionArgs): Promise<ActionData> {
+export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData()
 
 	const commentId = formData.get('commentId') as string
+	const intent = formData.get('_intent') as string
 
 	try {
 		await db.comment.update({
@@ -118,18 +115,24 @@ export async function action({ request }: ActionFunctionArgs): Promise<ActionDat
 				id: commentId,
 			},
 			data: {
-				votes: {
-					increment: 1,
-				},
+				votes:
+					intent === 'upvote'
+						? {
+								increment: 1,
+							}
+						: {
+								decrement: 1,
+							},
 			},
 		})
 
 		return { success: true, error: null }
 	} catch (error) {
-		if (error instanceof Error) {
-			console.log('vote: ', error.message)
-		}
-		return { success: false, error: 'Error while updating votes for a comment' }
+		logError(error, 'Vote action: ')
+		return data(
+			{ success: false, error: 'Error while updating votes for a comment' },
+			{ status: 400 },
+		)
 	}
 }
 
@@ -142,17 +145,37 @@ export default function Vote({ loaderData }: VoteProps) {
 	const { columns } = loaderData
 
 	const [upvotedComments, setUpvotedComments] = useState<string[]>([])
-	const [votesLeft, setVotesLeft] = useState<number>(5)
+	const [votesLeft, setVotesLeft] = useState<number>(5) // TODO make it based on amount of comments
 	const fetcher = useFetcher()
 
-	const handleVote = (e: any, commentId: string) => {
-		if (votesLeft === 0 || upvotedComments.includes(commentId)) {
-			e.preventDefault()
+	const handleVote = (commentId: string) => {
+		const isUpvoted = upvotedComments.includes(commentId)
+
+		if (votesLeft === 0 && !isUpvoted) {
 			return
 		}
 
-		setUpvotedComments((prevUpvotedComments) => [...prevUpvotedComments, commentId])
-		setVotesLeft((prevVotesLeft) => prevVotesLeft - 1)
+		const formData = new FormData()
+		formData.append('commentId', commentId)
+
+		if (isUpvoted) {
+			setUpvotedComments((prevUpvotedComments) =>
+				prevUpvotedComments.filter((id) => id !== commentId),
+			)
+			setVotesLeft((prevVotesLeft) => prevVotesLeft + 1)
+
+			formData.append('_intent', 'downvote')
+		} else {
+			setUpvotedComments((prevUpvotedComments) => [
+				...prevUpvotedComments,
+				commentId,
+			])
+			setVotesLeft((prevVotesLeft) => prevVotesLeft - 1)
+
+			formData.append('_intent', 'upvote')
+		}
+
+		fetcher.submit(formData, { method: 'post' })
 	}
 
 	// TODO maybe return comments ordered by createdAt, because when we vote the order of cards changes
@@ -171,6 +194,7 @@ export default function Vote({ loaderData }: VoteProps) {
 							</div>
 							{column.comments.map((comment) => {
 								const isUpvoted = upvotedComments.includes(comment.id)
+								const isDisabled = !isUpvoted && votesLeft === 0
 
 								return (
 									<div
@@ -178,22 +202,17 @@ export default function Vote({ loaderData }: VoteProps) {
 										key={comment.id}
 										id={comment.id}>
 										{comment.text}
-										<fetcher.Form method="post" className="text-right">
-											<input type="hidden" name="commentId" value={comment.id} />
+										<div className="text-right">
 											<button
 												aria-label="Vote for the comment"
 												aria-describedby={comment.id}
-												className={
-													isUpvoted || votesLeft === 0
-														? 'cursor-default'
-														: 'cursor-pointer'
-												}
-												onClick={(e) => handleVote(e, comment.id)}>
-												<ThumbsUpIcon
-													className={isUpvoted ? 'text-slate-800' : 'text-slate-400'}
-												/>
+												aria-pressed={isUpvoted ? true : false}
+												className={`p-2 rounded-md ${isUpvoted ? 'bg-slate-800 text-white' : 'bg-transparent text-slate-500'} ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
+												onClick={() => handleVote(comment.id)}
+												type="button">
+												<ThumbsUpIcon />
 											</button>
-										</fetcher.Form>
+										</div>
 									</div>
 								)
 							})}
