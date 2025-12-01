@@ -274,7 +274,7 @@ export default function Review({ loaderData }: ReviewProps) {
 				</p>
 			) : null}
 			<div
-				className="m-auto shadow-xl w-[500px] p-5"
+				className="m-auto shadow-xl w-5/6 md:w-[600px] p-5"
 				popover="auto"
 				id="view-actions-popover">
 				<h2 className="text-lg font-bold pb-3">Action items</h2>
@@ -291,11 +291,11 @@ export default function Review({ loaderData }: ReviewProps) {
 				</ol>
 			</div>
 			<div className="md:mx-auto pt-10">
-				<div className="w-full md:w-96 h-56">
+				<div className="w-full md:w-[450px] h-[320px]">
 					{comments.map((comment, i) => {
 						return (
 							<div
-								className={`w-full h-full bg-lime-200 p-2 font-sans mb-2 shadow-md overflow-y-scroll ${current === i ? 'block' : 'hidden'}`}
+								className={`w-full h-full bg-lime-200 p-4 font-sans mb-2 shadow-md overflow-y-scroll wrap-break-word ${current === i ? 'block' : 'hidden'}`}
 								key={i}>
 								<div className="flex justify-between pb-5">
 									<span className="inline-block mb-2 py-1.5 px-2 rounded text-sm text-right text-slate-700 border border-slate-700">
@@ -303,7 +303,7 @@ export default function Review({ loaderData }: ReviewProps) {
 									</span>
 									<div className="flex justify-end items-center gap-1">
 										<ThumbsUpIcon className="inline-block text-slate-800" />
-										<span>{comment.votes}</span>
+										<span>{comment.votes >= 0 ? comment.votes : 0}</span>
 									</div>
 								</div>
 								{comment.text}

@@ -103,7 +103,7 @@ export function BoardColumn({
 							<div
 								className="bg-lime-200 p-6 pb-4 font-sans mb-4 shadow-md"
 								key={comment.id}>
-								<p className="pb-6">{comment.text}</p>
+								<p className="pb-6 wrap-break-word">{comment.text}</p>
 								<div className="flex justify-between">
 									<button
 										aria-label="Edit comment"

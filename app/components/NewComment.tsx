@@ -60,7 +60,7 @@ export function NewComment({
 			<div className="relative">
 				<textarea
 					aria-label="Comment"
-					className="block w-full h-20 border border-slate-600 rounded bg-white font-sans p-1 pr-8"
+					className="block w-full h-32 border border-slate-600 rounded bg-white font-sans p-1 pr-8"
 					name="comment"
 					ref={textareaRef}
 					maxLength={450}
