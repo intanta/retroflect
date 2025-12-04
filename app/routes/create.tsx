@@ -7,6 +7,8 @@ import {
 } from 'react-router'
 import { z } from 'zod'
 
+import { CopyIcon } from '~/components/Icons/CopyIcon'
+
 import { db } from '~/lib/db.server'
 import { getSession, commitSession } from '~/lib/session.server'
 
@@ -80,16 +82,31 @@ type CreateRetroProps = z.infer<typeof createRetroPropsSchema>
 export default function Create({ actionData }: CreateRetroProps) {
 	const { retroId } = actionData || {}
 
+	const handleCopyToClipboard = () => {
+		navigator.clipboard.writeText(retroId!)
+	}
+
 	return (
 		<div className="flex h-screen flex-col justify-center items-center">
-			<h1 className="text-3xl text-slate-800 font-bold">Create a new Retro board</h1>
+			<h1 className="pb-3 text-3xl text-slate-800 font-bold">
+				Create a new Retro board
+			</h1>
 			{retroId ? (
 				<>
 					<p className="py-2">
 						Your retro board has been created. Please share the code below with your
 						team
 					</p>
-					<p className="text-2xl pb-3">{retroId}</p>
+					<p className="flex gap-3 text-2xl pb-3">
+						<span>{retroId}</span>
+						<button
+							aria-label="Copy the code for your retro board to clipboard"
+							className="cursor-pointer"
+							type="button"
+							onClick={handleCopyToClipboard}>
+							<CopyIcon className="size-6" />
+						</button>
+					</p>
 					<Link
 						className="text-slate-800 text-lg font-bold underline"
 						to={`/board/${retroId}/reflect`}>
@@ -98,44 +115,50 @@ export default function Create({ actionData }: CreateRetroProps) {
 				</>
 			) : (
 				<Form className="pt-3" method="post">
-					<label htmlFor="team">Team name</label>
+					<label className="text-sm font-semibold" htmlFor="team">
+						Team name
+					</label>
 					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2"
+						className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
 						id="team"
 						name="team"
 						defaultValue="Disturbed"
 					/>
-					<label htmlFor="sprint">Sprint</label>
+					<label className="text-sm font-semibold" htmlFor="sprint">
+						Sprint
+					</label>
 					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2"
+						className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
 						id="sprint"
 						name="sprint"
 						defaultValue="0001"
 					/>
 					<fieldset className="my-3">
-						<legend>Customize your board columns</legend>
+						<legend className="text-sm font-semibold">
+							Customize your board columns
+						</legend>
 						<input
 							aria-label="First column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2"
+							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
 							name="column"
 							defaultValue="What went well"
 						/>
 						<input
 							aria-label="Second column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2"
+							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
 							name="column"
 							defaultValue="What went wrong"
 						/>
 						<input
 							aria-label="Third column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2"
+							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
 							name="column"
 							defaultValue="Gratitudes"
 						/>
 					</fieldset>
 					<input type="hidden" name="uuid" value={crypto.randomUUID()} />
-					<div className="text-center">
-						<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white">
+					<div className="text-center pt-3">
+						<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white cursor-pointer">
 							Create Retro Board
 						</button>
 					</div>
