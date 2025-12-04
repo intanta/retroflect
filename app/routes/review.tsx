@@ -16,6 +16,8 @@ import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { ChevronIcon } from '~/components/Icons/ChevronIcon'
 
+import { logError } from '~/utils/helpers'
+
 export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Retroflect - Review' },
@@ -124,9 +126,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 		return data({ isHost: session.get('isHost'), comments })
 	} catch (error) {
-		if (error instanceof Error) {
-			console.log('review: ', error.message)
-		}
+		logError(error, 'review loader: ')
 		// TODO create an error boundary
 		return data({
 			comments: [],
@@ -156,9 +156,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
 
 		return { success: true, error: null }
 	} catch (error) {
-		if (error instanceof Error) {
-			console.log('add action item: ', error.message)
-		}
+		logError(error, 'add action item: ')
 		return { success: false, error: 'Error while adding an action item' }
 	}
 }
@@ -274,7 +272,7 @@ export default function Review({ loaderData }: ReviewProps) {
 				</p>
 			) : null}
 			<div
-				className="m-auto shadow-xl w-5/6 md:w-[600px] p-5"
+				className="m-auto shadow-xl w-5/6 md:w-[700px] p-5"
 				popover="auto"
 				id="view-actions-popover">
 				<h2 className="text-lg font-bold pb-3">Action items</h2>
@@ -312,26 +310,6 @@ export default function Review({ loaderData }: ReviewProps) {
 					})}
 				</div>
 				<div className="w-full flex justify-between pt-5">
-					<div>
-						<button
-							aria-disabled={isPrevDisabled}
-							aria-label="Previous"
-							disabled={isPrevDisabled}
-							type="button"
-							className={`mr-2 cursor-pointer border-2 rounded ${isPrevDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
-							onClick={handlePrev}>
-							<ChevronIcon className="w-10 h-10" />
-						</button>
-						<button
-							aria-disabled={isNextDisabled}
-							aria-label="Next"
-							disabled={isNextDisabled}
-							type="button"
-							className={`cursor-pointer border-2 rounded ${isNextDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
-							onClick={handleNext}>
-							<ChevronIcon className="w-10 h-10 rotate-180" />
-						</button>
-					</div>
 					{isHost ? (
 						<>
 							<button
@@ -353,7 +331,7 @@ export default function Review({ loaderData }: ReviewProps) {
 									{/* <input type="hidden" name="retroId" value={retroId} /> */}
 									<label htmlFor="action">Action item</label>
 									<textarea
-										className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+										className="block w-80 h-28 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
 										id="action"
 										name="action"
 									/>
@@ -378,6 +356,26 @@ export default function Review({ loaderData }: ReviewProps) {
 							</div>
 						</>
 					) : null}
+					<div>
+						<button
+							aria-disabled={isPrevDisabled}
+							aria-label="Previous"
+							disabled={isPrevDisabled}
+							type="button"
+							className={`mr-2 cursor-pointer border-2 rounded ${isPrevDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
+							onClick={handlePrev}>
+							<ChevronIcon className="w-10 h-10" />
+						</button>
+						<button
+							aria-disabled={isNextDisabled}
+							aria-label="Next"
+							disabled={isNextDisabled}
+							type="button"
+							className={`cursor-pointer border-2 rounded ${isNextDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
+							onClick={handleNext}>
+							<ChevronIcon className="w-10 h-10 rotate-180" />
+						</button>
+					</div>
 				</div>
 			</div>
 		</>

@@ -204,7 +204,7 @@ export default function Reflect({ loaderData }: BoardProps) {
 	}
 
 	return columns?.length ? (
-		<div className="grid grid-cols-3 gap-4">
+		<div className="grid grid-cols-3 gap-4 lg:w-[1300px] mx-auto">
 			{columns.map((column) => {
 				return (
 					<BoardColumn

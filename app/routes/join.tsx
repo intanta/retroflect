@@ -9,6 +9,8 @@ import {
 import { db } from '~/lib/db.server'
 import { getSession, commitSession } from '~/lib/session.server'
 
+import { logError } from '~/utils/helpers'
+
 export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Retroflect - Join retro' },
@@ -57,9 +59,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		})
 	} catch (error) {
-		if (error instanceof Error) {
-			console.log(error.message)
-		}
+		logError(error, 'join: ')
 
 		return data({
 			errorMessage:
@@ -78,7 +78,9 @@ export default function Join({ actionData }) {
 			</h1>
 			{error ? <p className="text-red-700 text-center">{error}</p> : null}
 			<Form className="pt-3" method="post">
-				<label htmlFor="retro-id">Enter the board code</label>
+				<label className="text-sm font-semibold" htmlFor="retro-id">
+					Enter the board code
+				</label>
 				<input
 					className="block w-94 rounded-sm border border-slate-700 bg-white p-2 mb-2"
 					id="retro-id"
@@ -86,7 +88,7 @@ export default function Join({ actionData }) {
 				/>
 				<input type="hidden" name="uuid" value={crypto.randomUUID()} />
 				<div className="text-center pt-2">
-					<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white">
+					<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white cursor-pointer">
 						Join
 					</button>
 				</div>
