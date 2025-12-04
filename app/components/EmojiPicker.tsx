@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { z } from 'zod'
 
 import { FaceIcon } from './Icons/FaceIcon'
@@ -88,13 +88,38 @@ type EmojiPickerProps = z.infer<typeof emojiPickerPropsSchema>
 
 export function EmojiPicker({ className, onPick }: EmojiPickerProps) {
 	const [isOpen, setIsOpen] = useState(false)
+	const containerRef = useRef<HTMLDivElement>(null)
+
 	const categories = Object.keys(emojiList) as Category[]
+
+	useEffect(() => {
+		if (isOpen) {
+			const controller = new AbortController()
+			const signal = controller.signal
+
+			// TODO fix type of event
+			const handleClickOutside = (e) => {
+				if (containerRef.current && !containerRef.current.contains(e.target)) {
+					setIsOpen(false)
+					controller.abort()
+				}
+			}
+
+			document.addEventListener('click', handleClickOutside, {
+				signal,
+			})
+
+			return () => {
+				if (!signal.aborted) {
+					controller.abort()
+				}
+			}
+		}
+	}, [isOpen])
 
 	const handleTriggerClick = () => {
 		setIsOpen((prevIsOpen) => !prevIsOpen)
 	}
-
-	// TODO handle Escape and outside click
 
 	const handlePick = (e: React.MouseEvent<HTMLButtonElement>) => {
 		const emoji = (e.target as HTMLElement).innerText
@@ -103,8 +128,18 @@ export function EmojiPicker({ className, onPick }: EmojiPickerProps) {
 		setIsOpen(false)
 	}
 
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		// TODO whats up with Escape in safari?
+		if (e.key === 'Escape' && isOpen) {
+			setIsOpen(false)
+		}
+	}
+
 	return (
-		<div className={`inline-block absolute ${className}`}>
+		<div
+			className={`inline-block absolute ${className}`}
+			onKeyDown={handleKeyDown}
+			ref={containerRef}>
 			<button
 				aria-label="emoji picker"
 				className="cursor-pointer"
