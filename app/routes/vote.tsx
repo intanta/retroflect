@@ -144,8 +144,13 @@ type VoteProps = z.infer<typeof votePropsSchema>
 export default function Vote({ loaderData }: VoteProps) {
 	const { columns } = loaderData
 
+	const numberOfComments = columns.reduce((acc, col) => {
+		acc = acc + col.comments.length
+		return acc
+	}, 0)
+
 	const [upvotedComments, setUpvotedComments] = useState<string[]>([])
-	const [votesLeft, setVotesLeft] = useState<number>(5) // TODO make it based on amount of comments
+	const [votesLeft, setVotesLeft] = useState<number>(Math.ceil(numberOfComments / 4))
 	const fetcher = useFetcher()
 
 	const handleVote = (commentId: string) => {
@@ -186,7 +191,7 @@ export default function Vote({ loaderData }: VoteProps) {
 		<>
 			<p className="py-2">Votes left: {votesLeft}</p>
 			{columnsToRender?.length ? (
-				<div className="grid grid-cols-3 gap-4">
+				<div className="grid grid-cols-3 gap-4 lg:w-[1300px] mx-auto">
 					{columnsToRender.map((column) => (
 						<div key={column.id} className="flex flex-col">
 							<div className="py-3 bg-slate-800 mb-4">
