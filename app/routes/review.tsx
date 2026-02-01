@@ -15,6 +15,7 @@ import { getSession } from '~/lib/session.server'
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { ChevronIcon } from '~/components/Icons/ChevronIcon'
+import { ActionItemEntry } from '~/components/ActionItem'
 
 import { logError } from '~/utils/helpers'
 
@@ -279,11 +280,13 @@ export default function Review({ loaderData }: ReviewProps) {
 				<ol className="list-decimal ml-8">
 					{actionItems.map((actionItem, i) => {
 						return (
-							<li key={i} className="pb-4">
-								<span>{actionItem.text}</span>
-								<br />
-								<span className="text-sm">Assignee: {actionItem.assignee}</span>
-							</li>
+							<ActionItemEntry
+								data={{
+									id: i.toString(),
+									text: actionItem.text,
+									assignee: actionItem.assignee,
+								}}
+							/>
 						)
 					})}
 				</ol>
