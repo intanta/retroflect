@@ -66,3 +66,37 @@ export const deleteComment = async (payload: DeleteCommentPayload) => {
 		throw error
 	}
 }
+
+export const getCommentsForReview = async ({ retroId }: { retroId: string }) => {
+	try {
+		const columns = await db.category.findMany({
+			where: {
+				retroId,
+			},
+			select: {
+				id: true,
+			},
+		})
+		const columnsIds = columns.map((column) => column.id)
+
+		return await db.comment.findMany({
+			where: {
+				categoryId: { in: columnsIds },
+			},
+			include: {
+				category: {
+					select: {
+						name: true,
+					},
+				},
+			},
+			orderBy: [
+				{
+					votes: 'desc',
+				},
+			],
+		})
+	} catch (error) {
+		throw error
+	}
+}
