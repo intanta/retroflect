@@ -52,6 +52,7 @@ model Comment {
 
 model Action {
   id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
   text        String
   assignee    String
   retro       Retro     @relation(fields: [retroId], references: [id], onDelete: Cascade)

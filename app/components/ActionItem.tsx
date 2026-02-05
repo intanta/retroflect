@@ -22,6 +22,14 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 
 	const { id, text, assignee } = data
 
+	useEffect(() => {
+		// TODO what about fetcher state?
+		// + showing error?
+		if (fetcher.data?.success && isEditing) {
+			setIsEditing(false)
+		}
+	}, [fetcher.data])
+
 	const handleEdit = () => {
 		setIsEditing(true)
 	}
@@ -38,10 +46,6 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 			e.preventDefault()
 			return
 		}
-
-		// TODO hook to db
-		console.log('new action ', actionItem)
-		e.preventDefault()
 	}
 
 	if (isEditing) {
@@ -57,11 +61,12 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 					/>
 					<label htmlFor="assignee">Assignee</label>
 					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+						className="block w-full md:w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
 						id="assignee"
 						name="assignee"
 						defaultValue={assignee}
 					/>
+					<input type="hidden" name="id" value={id} />
 					<div className="flex justify-end gap-2 pt-5">
 						<button
 							className="w-20 rounded border border-slate-800 px-2 py-1 text-slate-800 cursor-pointer"
@@ -69,7 +74,10 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 							type="button">
 							Cancel
 						</button>
-						<button className="w-20 border border-slate-800 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer">
+						<button
+							className="w-20 border border-slate-800 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+							name="_intent"
+							value="edit">
 							Save
 						</button>
 					</div>

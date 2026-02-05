@@ -18,6 +18,7 @@ import { ChevronIcon } from '~/components/Icons/ChevronIcon'
 import { ActionItemEntry } from '~/components/ActionItem'
 
 import { logError } from '~/utils/helpers'
+import { getCommentsForReview } from '~/services/comments'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -49,7 +50,7 @@ export function ErrorBoundary() {
 		)
 	}
 
-	console.log(error)
+	logError(error, 'Review route ErrorBoundary')
 
 	return <p>Oops, something went horribly wrong</p>
 }
@@ -64,8 +65,9 @@ const commentSchema = z.object({
 })
 const commentListSchema = z.array(commentSchema)
 const actionItemSchema = z.object({
+	id: z.string(),
 	text: z.string(),
-	assignee: z.string(),
+	assignee: z.string().optional(),
 })
 const actionItemListSchema = z.array(actionItemSchema)
 
@@ -73,11 +75,17 @@ type ActionItemList = z.infer<typeof actionItemListSchema>
 
 const loaderDataSchema = z.object({
 	comments: commentListSchema,
+	actionItems: actionItemListSchema,
 	isHost: z.boolean(),
 })
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const { id } = params
+
+	if (!id) {
+		// TODO throw error?
+		return null
+	}
 
 	try {
 		const retro = await db.retro.findUnique({
@@ -95,37 +103,22 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			})
 		}
 
-		const columns = await db.category.findMany({
+		const comments = await getCommentsForReview({ retroId: id })
+
+		const actionItems = await db.action.findMany({
 			where: {
 				retroId: id,
 			},
-			select: {
-				id: true,
-			},
-		})
-		const columnsIds = columns.map((column) => column.id)
-
-		const comments = await db.comment.findMany({
-			where: {
-				categoryId: { in: columnsIds },
-			},
-			include: {
-				category: {
-					select: {
-						name: true,
-					},
-				},
-			},
 			orderBy: [
 				{
-					votes: 'desc',
+					createdAt: 'asc',
 				},
 			],
 		})
 
 		const session = await getSession(request.headers.get('Cookie'))
 
-		return data({ isHost: session.get('isHost'), comments })
+		return data({ isHost: session.get('isHost'), comments, actionItems })
 	} catch (error) {
 		logError(error, 'review loader: ')
 		// TODO create an error boundary
@@ -137,29 +130,76 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 export async function action({ params, request }: ActionFunctionArgs) {
 	if (!params.id) {
+		// TODO throw error?
 		return null
 	}
 
 	const formData = await request.formData()
+
+	const intent = formData.get('_intent') as string
+	const id = formData.get('id') as string
 	const text = formData.get('action') as string
 	const assignee = formData.get('assignee') as string
 
-	// TODO add validation
+	// TODO add validation for length
+	if (!text) {
+		return data(
+			{ success: false, error: 'Cannot save an empty action item' },
+			{ status: 400 },
+		)
+	}
 
 	try {
-		await db.action.create({
-			data: {
-				retroId: params.id,
-				text,
-				assignee,
-			},
-		})
+		if (intent === 'add') {
+			await db.action.create({
+				data: {
+					retroId: params.id,
+					text,
+					assignee,
+				},
+			})
 
-		return { success: true, error: null }
+			return { success: true, error: null }
+		}
+
+		if (intent === 'edit' && id) {
+			await db.action.update({
+				where: {
+					id,
+				},
+				data: {
+					text,
+					assignee,
+				},
+			})
+
+			return { success: true, error: null }
+		}
+
+		logError('unrecognized intent', 'Error while saving an action item')
+		return data(
+			{ success: false, error: 'Error while saving an action item' },
+			{ status: 400 },
+		)
 	} catch (error) {
-		logError(error, 'add action item: ')
-		return { success: false, error: 'Error while adding an action item' }
+		logError(error, 'Review action: ')
+
+		return data(
+			{ success: false, error: 'Error while adding an action item' },
+			{ status: 500 },
+		)
 	}
+}
+
+const convertActionsJsonToText = (actionItems: ActionItemList) => {
+	const textResult = actionItems.reduce((res, actionItem) => {
+		const actionItemString = `${actionItem.text}\nAssignee: ${actionItem.assignee || 'Unknown'}`
+
+		res = `${res}\n\n${actionItemString}`
+		return res
+	}, '')
+
+	return textResult.trim()
 }
 
 const reviewPropsSchema = z.object({
@@ -168,32 +208,35 @@ const reviewPropsSchema = z.object({
 type ReviewProps = z.infer<typeof reviewPropsSchema>
 
 export default function Review({ loaderData }: ReviewProps) {
-	const { comments, isHost } = loaderData
+	const { comments, actionItems, isHost } = loaderData
 
 	const fetcher = useFetcher()
 	const actionPopoverRef = useRef(null)
 	const actionFormRef = useRef(null)
 
 	const [current, setCurrent] = useState(0)
-	const [actionItems, setActionItems] = useState<ActionItemList>([])
+	const [showActionItemsMobileDrawer, setShowActionItemsMobileDrawer] =
+		useState(false)
 
-	// TODO fix!!!
 	useEffect(() => {
 		const handleBeforeToggle = (e: any) => {
 			if (e.newState === 'open') {
 				if (actionFormRef.current) {
-					actionFormRef.current.reset()
+					;(actionFormRef.current as HTMLFormElement).reset()
 				}
 			}
 		}
 
 		if (actionPopoverRef.current && actionFormRef.current) {
-			actionPopoverRef.current.addEventListener('beforetoggle', handleBeforeToggle)
+			;(actionPopoverRef.current as HTMLElement).addEventListener(
+				'beforetoggle',
+				handleBeforeToggle,
+			)
 		}
 
 		return () => {
 			if (actionPopoverRef.current) {
-				actionPopoverRef.current.removeEventListener(
+				;(actionPopoverRef.current as HTMLElement).removeEventListener(
 					'beforetoggle',
 					handleBeforeToggle,
 				)
@@ -228,7 +271,6 @@ export default function Review({ loaderData }: ReviewProps) {
 	}
 
 	const hideActionPopover = () => {
-		// TODO reset form via ref
 		if (actionPopoverRef.current) {
 			const el = actionPopoverRef.current as HTMLElement
 			el.hidePopover()
@@ -238,149 +280,189 @@ export default function Review({ loaderData }: ReviewProps) {
 	const handleSave = (e: any) => {
 		const formData = new FormData(e.currentTarget)
 		const actionItem = formData.get('action') as string
-		const assignee = formData.get('assignee') as string
 
 		if (!actionItem) {
 			e.preventDefault()
 			return
 		}
 
-		setActionItems((prevActionItems) => [
-			...prevActionItems,
-			{ text: actionItem, assignee },
-		])
-
 		hideActionPopover()
+	}
+
+	const openMobileDrawer = () => {
+		setShowActionItemsMobileDrawer(true)
+	}
+
+	const closeMobileDrawer = () => {
+		setShowActionItemsMobileDrawer(false)
+	}
+
+	const handleDownload = () => {
+		const actionItemsString = convertActionsJsonToText(actionItems)
+		const blob = new Blob([actionItemsString], { type: 'text/plain' })
+		const url = URL.createObjectURL(blob)
+
+		const a = document.createElement('a')
+		a.href = url
+		a.download = 'retro_actions.txt'
+		document.body.appendChild(a)
+		a.click()
+
+		document.body.removeChild(a)
+		URL.revokeObjectURL(url)
 	}
 
 	const isPrevDisabled = current === 0
 	const isNextDisabled = current === comments.length - 1
-	const hasActionItems = actionItems.length > 0
 
 	return (
-		<>
-			{isHost ? (
-				<p className="py-4">
-					Action items: {actionItems.length}{' '}
-					{hasActionItems ? (
-						<button
-							className="px-2 cursor-pointer border-2 rounded border-slate-800 text-slate-800"
-							type="button"
-							popoverTarget="view-actions-popover">
-							View
-						</button>
-					) : null}
-				</p>
-			) : null}
-			<div
-				className="m-auto shadow-xl w-5/6 md:w-[700px] p-5"
-				popover="auto"
-				id="view-actions-popover">
-				<h2 className="text-lg font-bold pb-3">Action items</h2>
-				<ol className="list-decimal ml-8">
-					{actionItems.map((actionItem, i) => {
-						return (
-							<ActionItemEntry
-								data={{
-									id: i.toString(),
-									text: actionItem.text,
-									assignee: actionItem.assignee,
-								}}
-							/>
-						)
-					})}
-				</ol>
-			</div>
-			<div className="md:mx-auto pt-10">
-				<div className="w-full md:w-[450px] h-[320px]">
-					{comments.map((comment, i) => {
-						return (
-							<div
-								className={`w-full h-full bg-lime-200 p-4 font-sans mb-2 shadow-md overflow-y-scroll wrap-break-word ${current === i ? 'block' : 'hidden'}`}
-								key={i}>
-								<div className="flex justify-between pb-5">
-									<span className="inline-block mb-2 py-1.5 px-2 rounded text-sm text-right text-slate-700 border border-slate-700">
-										{comment.category.name}
-									</span>
-									<div className="flex justify-end items-center gap-1">
-										<ThumbsUpIcon className="inline-block text-slate-800" />
-										<span>{comment.votes >= 0 ? comment.votes : 0}</span>
+		<div className="relative pt-14 md:flex md:pt-10">
+			<div className="w-full md:w-auto md:basis-2/3 md:mx-auto">
+				<div className="md:mx-auto md:w-[450px]">
+					<div className="w-full h-[320px]">
+						{comments.map((comment, i) => {
+							return (
+								<div
+									className={`w-full h-full bg-lime-200 p-4 font-sans mb-2 shadow-md overflow-y-scroll wrap-break-word ${current === i ? 'block' : 'hidden'}`}
+									key={i}>
+									<div className="flex justify-between pb-5">
+										<span className="inline-block mb-2 py-1.5 px-2 rounded text-sm text-right text-slate-700 border border-slate-700">
+											{comment.category.name}
+										</span>
+										<div className="flex justify-end items-center gap-1">
+											<ThumbsUpIcon className="inline-block text-slate-800" />
+											<span>{comment.votes >= 0 ? comment.votes : 0}</span>
+										</div>
 									</div>
+									{comment.text}
 								</div>
-								{comment.text}
-							</div>
-						)
-					})}
-				</div>
-				<div className="w-full flex justify-between pt-5">
-					{isHost ? (
-						<>
+							)
+						})}
+					</div>
+					<div className="w-full flex justify-between pt-5">
+						{isHost ? (
+							<>
+								<button
+									className="h-11 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+									type="button"
+									popoverTarget="add-action-popover">
+									Add action item
+								</button>
+								<div
+									className="m-auto shadow-xl"
+									popover="auto"
+									id="add-action-popover"
+									ref={actionPopoverRef}>
+									<fetcher.Form
+										method="post"
+										className="w-[500px] p-5"
+										onSubmit={handleSave}
+										ref={actionFormRef}>
+										{/* <input type="hidden" name="retroId" value={retroId} /> */}
+										<label htmlFor="action">Action item</label>
+										<textarea
+											className="block w-80 h-28 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+											id="action"
+											name="action"
+										/>
+										<label htmlFor="assignee">Assignee</label>
+										<input
+											className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+											id="assignee"
+											name="assignee"
+										/>
+										<div className="flex justify-end gap-2 pt-5">
+											<button
+												className="w-20 rounded border border-slate-800 px-2 py-1 text-slate-800 cursor-pointer"
+												onClick={hideActionPopover}
+												type="button">
+												Cancel
+											</button>
+											<button
+												className="w-20 border border-slate-800 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+												name="_intent"
+												value="add">
+												Save
+											</button>
+										</div>
+									</fetcher.Form>
+								</div>
+							</>
+						) : null}
+						<div>
 							<button
-								className="h-11 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+								aria-disabled={isPrevDisabled}
+								aria-label="Previous"
+								disabled={isPrevDisabled}
 								type="button"
-								popoverTarget="add-action-popover">
-								Add action item
+								className={`mr-2 cursor-pointer border-2 rounded ${isPrevDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
+								onClick={handlePrev}>
+								<ChevronIcon className="w-10 h-10" />
 							</button>
-							<div
-								className="m-auto shadow-xl"
-								popover="auto"
-								id="add-action-popover"
-								ref={actionPopoverRef}>
-								<fetcher.Form
-									method="post"
-									className="w-[500px] p-5"
-									onSubmit={handleSave}
-									ref={actionFormRef}>
-									{/* <input type="hidden" name="retroId" value={retroId} /> */}
-									<label htmlFor="action">Action item</label>
-									<textarea
-										className="block w-80 h-28 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
-										id="action"
-										name="action"
-									/>
-									<label htmlFor="assignee">Assignee</label>
-									<input
-										className="block w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
-										id="assignee"
-										name="assignee"
-									/>
-									<div className="flex justify-end gap-2 pt-5">
-										<button
-											className="w-20 rounded border border-slate-800 px-2 py-1 text-slate-800 cursor-pointer"
-											onClick={hideActionPopover}
-											type="button">
-											Cancel
-										</button>
-										<button className="w-20 border border-slate-800 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer">
-											Save
-										</button>
-									</div>
-								</fetcher.Form>
-							</div>
-						</>
-					) : null}
-					<div>
-						<button
-							aria-disabled={isPrevDisabled}
-							aria-label="Previous"
-							disabled={isPrevDisabled}
-							type="button"
-							className={`mr-2 cursor-pointer border-2 rounded ${isPrevDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
-							onClick={handlePrev}>
-							<ChevronIcon className="w-10 h-10" />
-						</button>
-						<button
-							aria-disabled={isNextDisabled}
-							aria-label="Next"
-							disabled={isNextDisabled}
-							type="button"
-							className={`cursor-pointer border-2 rounded ${isNextDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
-							onClick={handleNext}>
-							<ChevronIcon className="w-10 h-10 rotate-180" />
-						</button>
+							<button
+								aria-disabled={isNextDisabled}
+								aria-label="Next"
+								disabled={isNextDisabled}
+								type="button"
+								className={`cursor-pointer border-2 rounded ${isNextDisabled ? 'border-slate-400 text-slate-400' : 'border-slate-800 text-slate-800'}`}
+								onClick={handleNext}>
+								<ChevronIcon className="w-10 h-10 rotate-180" />
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
-		</>
+			{isHost ? (
+				<div className="absolute top-1 right-0 md:static md:basis-1/3">
+					<button
+						className="md:hidden h-11 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+						type="button"
+						onClick={openMobileDrawer}>
+						Action items ({actionItems.length})
+					</button>
+					<div
+						className={`h-full w-5/6 fixed z-10 top-0 right-0 transition-transform ease-in duration-300 overflow-x-hidden ${showActionItemsMobileDrawer ? 'translate-0' : 'translate-x-full'} bg-white md:static md:translate-0 md:h-auto md:w-auto`}>
+						<div className="flex justify-center bg-slate-800 py-3 mb-4">
+							<button
+								className="md:hidden absolute top-1.5 left-2 rounded px-2 py-1 text-white cursor-pointer"
+								type="button"
+								onClick={closeMobileDrawer}>
+								&gt;&gt;
+							</button>
+							<h2 className="text-white">Action Items</h2>
+						</div>
+						<div className="py-2 px-3 md:max-h-[calc(100vh-350px)] overflow-y-scroll">
+							{actionItems.length > 0 ? (
+								<button
+									className="rounded border border-slate-800 px-2 py-1 text-slate-800 cursor-pointer"
+									type="button"
+									onClick={handleDownload}>
+									Download
+								</button>
+							) : (
+								<p className="text-center text-sm">
+									<span className="block text-5xl">{`\u{1F4DD}`}</span>
+									Action items that you add during discussion will appear here
+								</p>
+							)}
+							<ol className="list-decimal mt-2 ml-8">
+								{actionItems.map((actionItem) => {
+									return (
+										<ActionItemEntry
+											key={actionItem.id}
+											data={{
+												id: actionItem.id,
+												text: actionItem.text,
+												assignee: actionItem.assignee,
+											}}
+										/>
+									)
+								})}
+							</ol>
+						</div>
+					</div>
+				</div>
+			) : null}
+		</div>
 	)
 }
