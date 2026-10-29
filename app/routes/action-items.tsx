@@ -7,7 +7,7 @@ import {
 	useFetcher,
 } from 'react-router'
 import { useEffect, useId, useState } from 'react'
-import { boolean, z } from 'zod'
+import { z } from 'zod'
 
 import { getActionItems, updateActionItemStatus } from '~/services/action-items'
 
@@ -51,66 +51,6 @@ const STATUS_OPTIONS: ActionItemStatus[] = [
 const SORTABLE_COLUMNS = ['status', 'createdAt'] as const
 type SortableColumn = (typeof SORTABLE_COLUMNS)[number]
 type SortDirection = 'asc' | 'desc'
-
-// In-memory store to emulate persistence for this POC (no backend/service call).
-// let actionItemsStore: ActionItem[] = [
-// 	{
-// 		id: '1',
-// 		text: 'Confirm inbound rules match the latest security policy.',
-// 		assignee: 'John Doe',
-// 		status: 'New',
-// 		createdAt: '2026-09-20T10:00:00.000Z',
-// 	},
-// 	{
-// 		id: '2',
-// 		text: 'Add the new site manager as a secondary contact.',
-// 		assignee: 'Priya Patel',
-// 		status: 'In Progress',
-// 		createdAt: '2026-09-18T14:30:00.000Z',
-// 	},
-// 	{
-// 		id: '3',
-// 		text: 'Coordinate cutover window with the customer.',
-// 		assignee: 'John Doe',
-// 		status: 'Completed',
-// 		createdAt: '2026-09-10T09:15:00.000Z',
-// 	},
-// 	{
-// 		id: '4',
-// 		text: 'Book a technician visit for the downtown location.',
-// 		assignee: 'Maria Chen',
-// 		status: 'Not Needed',
-// 		createdAt: '2026-09-05T08:00:00.000Z',
-// 	},
-// 	{
-// 		id: '5',
-// 		text: 'Generate and distribute new keys to the integration team.',
-// 		assignee: 'Sam Osei',
-// 		status: 'New',
-// 		createdAt: '2026-09-25T16:45:00.000Z',
-// 	},
-// 	{
-// 		id: '6',
-// 		text: 'Verify the upgrade request was received by provisioning.',
-// 		assignee: 'Priya Patel',
-// 		status: 'In Progress',
-// 		createdAt: '2026-09-22T11:20:00.000Z',
-// 	},
-// 	{
-// 		id: '7',
-// 		text: 'Move resolved tickets older than 90 days to the archive.',
-// 		assignee: 'Maria Chen',
-// 		status: 'Completed',
-// 		createdAt: '2026-09-01T13:00:00.000Z',
-// 	},
-// 	{
-// 		id: '8',
-// 		text: 'Assess cost and feasibility of a secondary carrier.',
-// 		assignee: 'Sam Osei',
-// 		status: 'Not Needed',
-// 		createdAt: '2026-08-28T09:30:00.000Z',
-// 	},
-// ]
 
 function isSortableColumn(value: string | null): value is SortableColumn {
 	return SORTABLE_COLUMNS.includes(value as SortableColumn)
@@ -166,33 +106,6 @@ export async function action({ request }: ActionFunctionArgs) {
 	const id = formData.get('id') as string
 	const status = formData.get('status') as ActionItemStatus
 
-	// Simulated network latency so this POC can demonstrate the loading indicator without a real backend.
-	// await new Promise((resolve) => setTimeout(resolve, 1200))
-
-	// const actionItem = actionItemsStore.find((item) => item.id === id)
-
-	// if (!actionItem) {
-	// 	return {
-	// 		ok: false as const,
-	// 		updatedId: id,
-	// 		error: 'Item not found.',
-	// 	}
-	// }
-
-	// // Simulated, occasional failure so this POC can demonstrate error handling without a real backend.
-	// const didRequestFail = Math.random() < 0.2
-	// if (didRequestFail) {
-	// 	return {
-	// 		ok: false as const,
-	// 		updatedId: id,
-	// 		error: 'Update failed. Try again.',
-	// 	}
-	// }
-
-	// actionItemsStore = actionItemsStore.map((item) =>
-	// 	item.id === id ? { ...item, status } : item,
-	// )
-
 	try {
 		await updateActionItemStatus(id, status)
 
@@ -205,8 +118,6 @@ export async function action({ request }: ActionFunctionArgs) {
 			{ status: 500 },
 		)
 	}
-
-	//return { ok: true as const, updatedId: id, updatedStatus: status }
 }
 
 function getSortHref(
