@@ -50,12 +50,20 @@ model Comment {
   userId      String?
 }
 
+enum ActionStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+  NOT_NEEDED
+}
+
 model Action {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now())
+  id          String       @id @default(uuid())
+  createdAt   DateTime     @default(now())
   text        String
   assignee    String
-  retro       Retro     @relation(fields: [retroId], references: [id], onDelete: Cascade)
+  status      ActionStatus @default(NEW)
+  retro       Retro        @relation(fields: [retroId], references: [id], onDelete: Cascade)
   retroId     String
 }
 

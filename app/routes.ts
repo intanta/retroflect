@@ -4,6 +4,7 @@ export default [
 	index('routes/home.tsx'),
 	route('create', './routes/create.tsx'),
 	route('join', './routes/join.tsx'),
+	route('action-items', './routes/action-items.tsx'),
 	route('board/:id', './routes/board.tsx', [
 		route('reflect', './routes/reflect.tsx'),
 		route('vote', './routes/vote.tsx'),
