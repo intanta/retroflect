@@ -73,7 +73,7 @@ export default function Join({ actionData }) {
 	const error = actionData?.errorMessage
 
 	return (
-		<div className="flex h-screen flex-col justify-center items-center">
+		<div className="flex flex-1 flex-col justify-center items-center">
 			<h1 className="text-3xl text-ink font-bold pb-3">
 				Join your team's Retro board
 			</h1>

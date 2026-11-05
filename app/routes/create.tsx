@@ -88,7 +88,7 @@ export default function Create({ actionData }: CreateRetroProps) {
 	}
 
 	return (
-		<div className="flex h-screen flex-col justify-center items-center">
+		<div className="flex flex-1 flex-col justify-center items-center">
 			<h1 className="pb-3 text-3xl text-ink font-bold">
 				Create a new Retro board
 			</h1>

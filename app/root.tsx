@@ -1,14 +1,45 @@
 import {
 	isRouteErrorResponse,
+	Link,
 	Links,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useMatches,
 } from 'react-router'
 
 import type { Route } from './+types/root'
 import './app.css'
+import { LogoIcon } from '~/components/Icons/Logo'
+
+/**
+ * Routes can export `handle: RouteHandle` to control the shared header.
+ * The flag also applies to a route's child routes.
+ */
+export type RouteHandle = {
+	showProgress?: boolean
+}
+
+function SiteHeader() {
+	const matches = useMatches()
+	const showProgress = matches.some(
+		(match) => (match.handle as RouteHandle | undefined)?.showProgress,
+	)
+
+	return (
+		<header className="flex items-center justify-between px-5 py-3">
+			<Link to="/" className="flex items-center gap-2 text-ink">
+				<LogoIcon className="w-8 h-8" />
+				<span className="text-xl font-bold">Retroflect</span>
+			</Link>
+			{showProgress ? (
+				// TODO replace with <ProgressBar status={...} /> (status is in the board match's data)
+				<div data-testid="progress-placeholder" />
+			) : null}
+		</header>
+	)
+}
 
 export const links: Route.LinksFunction = () => [
 	{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -32,8 +63,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Meta />
 				<Links />
 			</head>
-			<body>
-				{children}
+			<body className="flex min-h-screen flex-col">
+				<SiteHeader />
+				<main className="flex flex-1 flex-col">{children}</main>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
@@ -62,7 +94,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	}
 
 	return (
-		<main className="pt-16 p-4 container mx-auto">
+		<div className="pt-16 p-4 container mx-auto">
 			<h1>{message}</h1>
 			<p>{details}</p>
 			{stack && (
@@ -70,6 +102,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 					<code>{stack}</code>
 				</pre>
 			)}
-		</main>
+		</div>
 	)
 }

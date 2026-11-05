@@ -9,7 +9,7 @@ export const meta: MetaFunction = () => {
 
 export default function Home() {
 	return (
-		<div className="flex h-screen flex-col justify-center">
+		<div className="flex flex-1 flex-col justify-center">
 			<h1 className="text-3xl text-ink text-center font-bold pb-5">
 				Welcome to Retroflect!
 			</h1>

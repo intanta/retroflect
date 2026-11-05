@@ -44,7 +44,7 @@ export function ErrorBoundary() {
 
 	if (isErrorData(error)) {
 		return (
-			<div className="absolute h-screen top-0 left-0 right-0 flex flex-col justify-center items-center gap-5 bg-surface-inverse">
+			<div className="flex flex-1 flex-col justify-center items-center gap-5 bg-surface-inverse">
 				<HourGlassIcon className="w-30 h-30 text-ink-inverse" />
 				<p className="text-ink-inverse text-3xl">{error.data.message}</p>
 			</div>
@@ -247,7 +247,7 @@ export default function Review({ loaderData }: ReviewProps) {
 
 	if (!comments?.length) {
 		return (
-			<div className="absolute h-screen top-0 left-0 right-0 flex flex-col justify-center items-center gap-5 bg-surface-inverse">
+			<div className="flex flex-1 flex-col justify-center items-center gap-5 bg-surface-inverse">
 				<p className="text-ink-inverse text-3xl">
 					Oh no! Looks like there is nothing to review
 				</p>

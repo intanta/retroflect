@@ -16,6 +16,9 @@ import { db } from '~/lib/db.server'
 import { getSession } from '~/lib/session.server'
 import { supabase } from '~/lib/supabase'
 import { Button } from '~/components/Button'
+import type { RouteHandle } from '~/root'
+
+export const handle: RouteHandle = { showProgress: true }
 
 export const meta: MetaFunction = () => {
 	return [{ title: 'Retroflect - Retro in progress' }]
@@ -145,7 +148,7 @@ export default function Board({ loaderData }: BoardProps) {
 	}
 
 	return (
-		<div className="flex h-screen flex-col p-5">
+		<div className="flex flex-1 flex-col p-5">
 			<div className="flex justify-between py-5 border-b">
 				<h1 className="text-2xl font-bold">{config[status].heading}</h1>
 				{isHost ? (
