@@ -74,14 +74,14 @@ export function BoardColumn({
 
 	return (
 		<div className="py-3">
-			<div className="flex justify-center gap-2 bg-slate-800 py-3 mb-4">
-				<h2 className="text-white">{name}</h2>
+			<div className="flex justify-center gap-2 bg-surface-inverse py-3 mb-4">
+				<h2 className="text-ink-inverse">{name}</h2>
 				<button
 					aria-label={`Add new comment under ${name}`}
 					className="cursor-pointer"
 					type="button"
 					onClick={handleAdd}>
-					<CircledPlusIcon className="text-white" />
+					<CircledPlusIcon className="text-ink-inverse" />
 				</button>
 			</div>
 
@@ -101,7 +101,7 @@ export function BoardColumn({
 						}
 						return (
 							<div
-								className="bg-lime-200 p-6 pb-4 font-sans mb-4 shadow-md"
+								className="bg-note p-6 pb-4 font-sans mb-4 shadow-md"
 								key={comment.id}>
 								<p className="pb-6 wrap-break-word">{comment.text}</p>
 								<div className="flex justify-between">
@@ -110,17 +110,17 @@ export function BoardColumn({
 										className="cursor-pointer"
 										type="button"
 										onClick={() => handleEdit(comment.id)}>
-										<EditIcon className="text-slate-800" />
+										<EditIcon className="text-ink" />
 									</button>
 									<fetcher.Form method="post">
 										<input type="hidden" name="commentId" value={comment.id} />
 										<button
 											aria-label="Delete comment"
-											className="p-2 rounded-md bg-[#D82F65CC] cursor-pointer"
+											className="p-2 rounded-md bg-danger/80 cursor-pointer"
 											name="_intent"
 											value="delete"
 											type="submit">
-											<TrashIcon className="size-5 text-white" />
+											<TrashIcon className="size-5 text-on-danger" />
 										</button>
 									</fetcher.Form>
 								</div>

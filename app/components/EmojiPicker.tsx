@@ -145,10 +145,10 @@ export function EmojiPicker({ className, onPick }: EmojiPickerProps) {
 				className="cursor-pointer"
 				onClick={handleTriggerClick}
 				type="button">
-				<FaceIcon className="fill-slate-500" />
+				<FaceIcon className="fill-ink-muted" />
 			</button>
 			<div
-				className={`${isOpen ? 'block' : 'hidden'} absolute top-6 right-0 w-[178px] p-2 bg-white border border-slate-900`}>
+				className={`${isOpen ? 'block' : 'hidden'} absolute top-6 right-0 w-[178px] p-2 bg-surface border border-line-strong`}>
 				{categories.map((category) => {
 					return (
 						<div key={category}>

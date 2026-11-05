@@ -73,22 +73,22 @@ export default function Join({ actionData }) {
 
 	return (
 		<div className="flex h-screen flex-col justify-center items-center">
-			<h1 className="text-3xl text-slate-800 font-bold pb-3">
+			<h1 className="text-3xl text-ink font-bold pb-3">
 				Join your team's Retro board
 			</h1>
-			{error ? <p className="text-red-700 text-center">{error}</p> : null}
+			{error ? <p className="text-danger-ink text-center">{error}</p> : null}
 			<Form className="pt-3" method="post">
 				<label className="text-sm font-semibold" htmlFor="retro-id">
 					Enter the board code
 				</label>
 				<input
-					className="block w-94 rounded-sm border border-slate-700 bg-white p-2 mb-2"
+					className="block w-94 rounded-sm border border-line bg-surface p-2 mb-2"
 					id="retro-id"
 					name="retro-id"
 				/>
 				<input type="hidden" name="uuid" value={crypto.randomUUID()} />
 				<div className="text-center pt-2">
-					<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white cursor-pointer">
+					<button className="rounded bg-action px-4 py-3 text-xl text-on-action cursor-pointer">
 						Join
 					</button>
 				</div>

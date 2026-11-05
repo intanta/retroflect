@@ -54,14 +54,14 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 				<fetcher.Form method="post" className="" onSubmit={handleSave}>
 					<label htmlFor="action">Action item</label>
 					<textarea
-						className="block w-full h-28 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+						className="block w-full h-28 rounded-sm border border-line bg-surface p-1 mb-2 font-sans"
 						id="action"
 						name="action"
 						defaultValue={text}
 					/>
 					<label htmlFor="assignee">Assignee</label>
 					<input
-						className="block w-full md:w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+						className="block w-full md:w-80 rounded-sm border border-line bg-surface p-1 mb-2 font-sans"
 						id="assignee"
 						name="assignee"
 						defaultValue={assignee}
@@ -69,13 +69,13 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 					<input type="hidden" name="id" value={id} />
 					<div className="flex justify-end gap-2 pt-5">
 						<button
-							className="w-20 rounded border border-slate-800 px-2 py-1 text-slate-800 cursor-pointer"
+							className="w-20 rounded border border-line-strong px-2 py-1 text-ink cursor-pointer"
 							onClick={handleCancel}
 							type="button">
 							Cancel
 						</button>
 						<button
-							className="w-20 border border-slate-800 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+							className="w-20 border border-action rounded bg-action px-2 py-1 text-on-action cursor-pointer"
 							name="_intent"
 							value="edit">
 							Save

@@ -40,9 +40,9 @@ export function ErrorBoundary() {
 
 	if (isErrorData(error)) {
 		return (
-			<div className="absolute h-screen top-0 left-0 right-0 flex flex-col justify-center items-center gap-5 bg-slate-800">
-				<HourGlassIcon className="w-30 h-30 text-white" />
-				<p className="text-white text-3xl">{error.data.message}</p>
+			<div className="absolute h-screen top-0 left-0 right-0 flex flex-col justify-center items-center gap-5 bg-surface-inverse">
+				<HourGlassIcon className="w-30 h-30 text-ink-inverse" />
+				<p className="text-ink-inverse text-3xl">{error.data.message}</p>
 			</div>
 		)
 	}
@@ -194,8 +194,8 @@ export default function Vote({ loaderData }: VoteProps) {
 				<div className="grid grid-cols-3 gap-4 lg:w-[1300px] mx-auto">
 					{columnsToRender.map((column) => (
 						<div key={column.id} className="flex flex-col">
-							<div className="py-3 bg-slate-800 mb-4">
-								<h2 className="text-center text-white">{column.name}</h2>
+							<div className="py-3 bg-surface-inverse mb-4">
+								<h2 className="text-center text-ink-inverse">{column.name}</h2>
 							</div>
 							{column.comments.map((comment) => {
 								const isUpvoted = upvotedComments.includes(comment.id)
@@ -203,7 +203,7 @@ export default function Vote({ loaderData }: VoteProps) {
 
 								return (
 									<div
-										className="bg-lime-200 p-2 font-sans mb-4 shadow-md"
+										className="bg-note p-2 font-sans mb-4 shadow-md"
 										key={comment.id}
 										id={comment.id}>
 										{comment.text}
@@ -212,7 +212,7 @@ export default function Vote({ loaderData }: VoteProps) {
 												aria-label="Vote for the comment"
 												aria-describedby={comment.id}
 												aria-pressed={isUpvoted ? true : false}
-												className={`p-2 rounded-md ${isUpvoted ? 'bg-slate-800 text-white' : 'bg-transparent text-slate-500'} ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
+												className={`p-2 rounded-md ${isUpvoted ? 'bg-action text-on-action' : 'bg-transparent text-ink-muted'} ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
 												onClick={() => handleVote(comment.id)}
 												type="button">
 												<ThumbsUpIcon />

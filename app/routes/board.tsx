@@ -151,7 +151,7 @@ export default function Board({ loaderData }: BoardProps) {
 					<Form method="post">
 						<input type="hidden" name="retroStatus" value={status} />
 						<button
-							className="text-slate-800 text-lg font-bold underline cursor-pointer"
+							className="text-ink text-lg font-bold underline cursor-pointer"
 							type="submit">
 							{config[status].ctaLabel}
 						</button>
@@ -159,7 +159,7 @@ export default function Board({ loaderData }: BoardProps) {
 				) : null}
 				{!isHost && isNextStepAvailable && config[status].ctaLink ? (
 					<Link
-						className="text-slate-800 text-lg font-bold underline"
+						className="text-ink text-lg font-bold underline"
 						to={config[status].ctaLink}>
 						{config[status].ctaLabel}
 					</Link>

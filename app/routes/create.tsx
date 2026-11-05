@@ -88,7 +88,7 @@ export default function Create({ actionData }: CreateRetroProps) {
 
 	return (
 		<div className="flex h-screen flex-col justify-center items-center">
-			<h1 className="pb-3 text-3xl text-slate-800 font-bold">
+			<h1 className="pb-3 text-3xl text-ink font-bold">
 				Create a new Retro board
 			</h1>
 			{retroId ? (
@@ -108,7 +108,7 @@ export default function Create({ actionData }: CreateRetroProps) {
 						</button>
 					</p>
 					<Link
-						className="text-slate-800 text-lg font-bold underline"
+						className="text-ink text-lg font-bold underline"
 						to={`/board/${retroId}/reflect`}>
 						Go to retro
 					</Link>
@@ -119,7 +119,7 @@ export default function Create({ actionData }: CreateRetroProps) {
 						Team name
 					</label>
 					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
+						className="block w-80 rounded-sm border border-line bg-surface p-2 mb-2"
 						id="team"
 						name="team"
 						defaultValue="Disturbed"
@@ -128,7 +128,7 @@ export default function Create({ actionData }: CreateRetroProps) {
 						Sprint
 					</label>
 					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
+						className="block w-80 rounded-sm border border-line bg-surface p-2 mb-2"
 						id="sprint"
 						name="sprint"
 						defaultValue="0001"
@@ -139,26 +139,26 @@ export default function Create({ actionData }: CreateRetroProps) {
 						</legend>
 						<input
 							aria-label="First column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
+							className="block w-80 rounded-sm border border-line bg-surface p-2 mb-2"
 							name="column"
 							defaultValue="What went well"
 						/>
 						<input
 							aria-label="Second column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
+							className="block w-80 rounded-sm border border-line bg-surface p-2 mb-2"
 							name="column"
 							defaultValue="What went wrong"
 						/>
 						<input
 							aria-label="Third column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
+							className="block w-80 rounded-sm border border-line bg-surface p-2 mb-2"
 							name="column"
 							defaultValue="Gratitudes"
 						/>
 					</fieldset>
 					<input type="hidden" name="uuid" value={crypto.randomUUID()} />
 					<div className="text-center pt-3">
-						<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white cursor-pointer">
+						<button className="rounded bg-action px-4 py-3 text-xl text-on-action cursor-pointer">
 							Create Retro Board
 						</button>
 					</div>

@@ -54,13 +54,13 @@ export function NewComment({
 
 	return (
 		<fetcher.Form
-			className="bg-lime-200 p-6 pb-4 mb-4"
+			className="bg-note p-6 pb-4 mb-4"
 			method="post"
 			onSubmit={handleSave}>
 			<div className="relative">
 				<textarea
 					aria-label="Comment"
-					className="block w-full h-32 border border-slate-600 rounded bg-white font-sans p-1 pr-8"
+					className="block w-full h-32 border border-line rounded bg-surface font-sans p-1 pr-8"
 					name="comment"
 					ref={textareaRef}
 					maxLength={450}
@@ -73,18 +73,18 @@ export function NewComment({
 			<div className="flex justify-between pt-6">
 				<button
 					aria-label="Discard"
-					className="border border-slate-800 rounded-md p-2 text-sm cursor-pointer"
+					className="border border-line-strong rounded-md p-2 text-sm cursor-pointer"
 					onClick={onDiscard}
 					type="button">
 					Cancel
-					{/* <TrashIcon className="size-5 text-slate-800" /> */}
+					{/* <TrashIcon className="size-5 text-ink" /> */}
 				</button>
 				<button
 					aria-label="Save"
-					className="p-2 rounded-md bg-slate-800 cursor-pointer"
+					className="p-2 rounded-md bg-action cursor-pointer"
 					name="_intent"
 					value={currentText ? 'edit' : 'add'}>
-					<SendIcon className="size-5 text-white" />
+					<SendIcon className="size-5 text-on-action" />
 				</button>
 			</div>
 		</fetcher.Form>
