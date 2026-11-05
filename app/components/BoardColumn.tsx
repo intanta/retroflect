@@ -2,6 +2,7 @@ import { useFetcher } from 'react-router'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { NewComment } from './NewComment'
 import { CircledPlusIcon } from './Icons/CircledPlusIcon'
 import { EditIcon } from './Icons/EditIcon'
@@ -76,13 +77,12 @@ export function BoardColumn({
 		<div className="py-3">
 			<div className="flex justify-center gap-2 bg-surface-inverse py-3 mb-4">
 				<h2 className="text-ink-inverse">{name}</h2>
-				<button
+				<Button
 					aria-label={`Add new comment under ${name}`}
-					className="cursor-pointer"
-					type="button"
+					className="p-0 text-ink-inverse enabled:hover:bg-ink-inverse/15"
 					onClick={handleAdd}>
-					<CircledPlusIcon className="text-ink-inverse" />
-				</button>
+					<CircledPlusIcon />
+				</Button>
 			</div>
 
 			{comments
@@ -105,23 +105,24 @@ export function BoardColumn({
 								key={comment.id}>
 								<p className="pb-6 wrap-break-word">{comment.text}</p>
 								<div className="flex justify-between">
-									<button
+									<Button
 										aria-label="Edit comment"
-										className="cursor-pointer"
-										type="button"
+										variant="secondary-ghost"
+										className="p-1.5 -ml-2"
 										onClick={() => handleEdit(comment.id)}>
-										<EditIcon className="text-ink" />
-									</button>
+										<EditIcon />
+									</Button>
 									<fetcher.Form method="post">
 										<input type="hidden" name="commentId" value={comment.id} />
-										<button
+										<Button
 											aria-label="Delete comment"
-											className="p-2 rounded-md bg-danger/80 cursor-pointer"
+											variant="danger"
+											className="p-2"
 											name="_intent"
 											value="delete"
 											type="submit">
-											<TrashIcon className="size-5 text-on-danger" />
-										</button>
+											<TrashIcon className="size-5" />
+										</Button>
 									</fetcher.Form>
 								</div>
 							</div>

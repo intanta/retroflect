@@ -15,6 +15,7 @@ import { z } from 'zod'
 import { db } from '~/lib/db.server'
 import { getSession } from '~/lib/session.server'
 import { supabase } from '~/lib/supabase'
+import { Button } from '~/components/Button'
 
 export const meta: MetaFunction = () => {
 	return [{ title: 'Retroflect - Retro in progress' }]
@@ -150,11 +151,11 @@ export default function Board({ loaderData }: BoardProps) {
 				{isHost ? (
 					<Form method="post">
 						<input type="hidden" name="retroStatus" value={status} />
-						<button
-							className="text-ink text-lg font-bold underline cursor-pointer"
+						<Button
+							className="p-0 text-ink text-lg font-bold underline enabled:hover:no-underline"
 							type="submit">
 							{config[status].ctaLabel}
-						</button>
+						</Button>
 					</Form>
 				) : null}
 				{!isHost && isNextStepAvailable && config[status].ctaLink ? (

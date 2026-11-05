@@ -10,6 +10,7 @@ import { db } from '~/lib/db.server'
 import { getSession, commitSession } from '~/lib/session.server'
 
 import { logError } from '~/utils/helpers'
+import { Button } from '~/components/Button'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -88,9 +89,9 @@ export default function Join({ actionData }) {
 				/>
 				<input type="hidden" name="uuid" value={crypto.randomUUID()} />
 				<div className="text-center pt-2">
-					<button className="rounded bg-action px-4 py-3 text-xl text-on-action cursor-pointer">
+					<Button type="submit" variant="primary" className="px-4 py-3 text-xl">
 						Join
-					</button>
+					</Button>
 				</div>
 			</Form>
 		</div>

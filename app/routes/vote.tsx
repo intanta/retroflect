@@ -12,6 +12,7 @@ import { z } from 'zod'
 
 import { db } from '~/lib/db.server'
 
+import { Button } from '~/components/Button'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 
@@ -208,15 +209,17 @@ export default function Vote({ loaderData }: VoteProps) {
 										id={comment.id}>
 										{comment.text}
 										<div className="text-right">
-											<button
+											<Button
 												aria-label="Vote for the comment"
 												aria-describedby={comment.id}
 												aria-pressed={isUpvoted ? true : false}
-												className={`p-2 rounded-md ${isUpvoted ? 'bg-action text-on-action' : 'bg-transparent text-ink-muted'} ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
-												onClick={() => handleVote(comment.id)}
-												type="button">
-												<ThumbsUpIcon />
-											</button>
+												variant={isUpvoted ? 'primary' : 'secondary-ghost'}
+												className={`p-2 ${isDisabled ? 'cursor-default! hover:bg-transparent!' : ''}`}
+												onClick={() => handleVote(comment.id)}>
+												<ThumbsUpIcon
+													className={isUpvoted ? undefined : 'text-ink-muted'}
+												/>
+											</Button>
 										</div>
 									</div>
 								)

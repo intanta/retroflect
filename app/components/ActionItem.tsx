@@ -2,6 +2,7 @@ import { useFetcher } from 'react-router'
 import { useState, useEffect, useRef } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { EditIcon } from './Icons/EditIcon'
 
 const actionItemSchema = z.object({
@@ -68,18 +69,17 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 					/>
 					<input type="hidden" name="id" value={id} />
 					<div className="flex justify-end gap-2 pt-5">
-						<button
-							className="w-20 rounded border border-line-strong px-2 py-1 text-ink cursor-pointer"
-							onClick={handleCancel}
-							type="button">
+						<Button variant="secondary" className="w-20" onClick={handleCancel}>
 							Cancel
-						</button>
-						<button
-							className="w-20 border border-action rounded bg-action px-2 py-1 text-on-action cursor-pointer"
+						</Button>
+						<Button
+							type="submit"
+							variant="primary"
+							className="w-20"
 							name="_intent"
 							value="edit">
 							Save
-						</button>
+						</Button>
 					</div>
 				</fetcher.Form>
 			</li>
@@ -90,13 +90,13 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 		<li key={id} className="pb-4">
 			<p className="relative pr-6">
 				{text}
-				<button
+				<Button
 					aria-label={`Edit action item ${text}`}
-					type="button"
-					className="absolute top-0 right-0 cursor-pointer"
+					variant="secondary-ghost"
+					className="absolute top-0 right-0 p-1 -m-1.5"
 					onClick={handleEdit}>
 					<EditIcon />
-				</button>
+				</Button>
 			</p>
 			<span className="text-sm">Assignee: {assignee}</span>
 		</li>

@@ -7,6 +7,7 @@ import {
 } from 'react-router'
 import { z } from 'zod'
 
+import { Button } from '~/components/Button'
 import { CopyIcon } from '~/components/Icons/CopyIcon'
 
 import { db } from '~/lib/db.server'
@@ -99,13 +100,13 @@ export default function Create({ actionData }: CreateRetroProps) {
 					</p>
 					<p className="flex gap-3 text-2xl pb-3">
 						<span>{retroId}</span>
-						<button
+						<Button
 							aria-label="Copy the code for your retro board to clipboard"
-							className="cursor-pointer"
-							type="button"
+							variant="secondary-ghost"
+							className="p-0"
 							onClick={handleCopyToClipboard}>
 							<CopyIcon className="size-6" />
-						</button>
+						</Button>
 					</p>
 					<Link
 						className="text-ink text-lg font-bold underline"
@@ -158,9 +159,9 @@ export default function Create({ actionData }: CreateRetroProps) {
 					</fieldset>
 					<input type="hidden" name="uuid" value={crypto.randomUUID()} />
 					<div className="text-center pt-3">
-						<button className="rounded bg-action px-4 py-3 text-xl text-on-action cursor-pointer">
+						<Button type="submit" variant="primary" className="px-4 py-3 text-xl">
 							Create Retro Board
-						</button>
+						</Button>
 					</div>
 				</Form>
 			)}

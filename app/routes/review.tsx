@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { db } from '~/lib/db.server'
 import { getSession } from '~/lib/session.server'
 
+import { Button } from '~/components/Button'
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { ChevronIcon } from '~/components/Icons/ChevronIcon'
@@ -342,12 +343,12 @@ export default function Review({ loaderData }: ReviewProps) {
 					<div className="w-full flex justify-between pt-5">
 						{isHost ? (
 							<>
-								<button
-									className="h-11 rounded bg-action px-2 py-1 text-on-action cursor-pointer"
-									type="button"
+								<Button
+									variant="primary"
+									className="h-11"
 									popoverTarget="add-action-popover">
 									Add action item
-								</button>
+								</Button>
 								<div
 									className="m-auto shadow-xl"
 									popover="auto"
@@ -372,73 +373,69 @@ export default function Review({ loaderData }: ReviewProps) {
 											name="assignee"
 										/>
 										<div className="flex justify-end gap-2 pt-5">
-											<button
-												className="w-20 rounded border border-line-strong px-2 py-1 text-ink cursor-pointer"
-												onClick={hideActionPopover}
-												type="button">
+											<Button
+												variant="secondary"
+												className="w-20"
+												onClick={hideActionPopover}>
 												Cancel
-											</button>
-											<button
-												className="w-20 border border-action rounded bg-action px-2 py-1 text-on-action cursor-pointer"
+											</Button>
+											<Button
+												type="submit"
+												variant="primary"
+												className="w-20"
 												name="_intent"
 												value="add">
 												Save
-											</button>
+											</Button>
 										</div>
 									</fetcher.Form>
 								</div>
 							</>
 						) : null}
 						<div>
-							<button
+							<Button
 								aria-disabled={isPrevDisabled}
 								aria-label="Previous"
 								disabled={isPrevDisabled}
-								type="button"
-								className={`mr-2 cursor-pointer border-2 rounded ${isPrevDisabled ? 'border-line-disabled text-ink-disabled' : 'border-line-strong text-ink'}`}
+								className="mr-2 p-0 border-2 border-line-strong text-ink enabled:hover:bg-ink/10 disabled:border-line-disabled disabled:text-ink-disabled"
 								onClick={handlePrev}>
 								<ChevronIcon className="w-10 h-10" />
-							</button>
-							<button
+							</Button>
+							<Button
 								aria-disabled={isNextDisabled}
 								aria-label="Next"
 								disabled={isNextDisabled}
-								type="button"
-								className={`cursor-pointer border-2 rounded ${isNextDisabled ? 'border-line-disabled text-ink-disabled' : 'border-line-strong text-ink'}`}
+								className="p-0 border-2 border-line-strong text-ink enabled:hover:bg-ink/10 disabled:border-line-disabled disabled:text-ink-disabled"
 								onClick={handleNext}>
 								<ChevronIcon className="w-10 h-10 rotate-180" />
-							</button>
+							</Button>
 						</div>
 					</div>
 				</div>
 			</div>
 			{isHost ? (
 				<div className="absolute top-1 right-0 md:static md:basis-1/3">
-					<button
-						className="md:hidden h-11 rounded bg-action px-2 py-1 text-on-action cursor-pointer"
-						type="button"
+					<Button
+						variant="primary"
+						className="md:hidden h-11"
 						onClick={openMobileDrawer}>
 						Action items ({actionItems.length})
-					</button>
+					</Button>
 					<div
 						className={`h-full w-5/6 fixed z-10 top-0 right-0 transition-transform ease-in duration-300 overflow-x-hidden ${showActionItemsMobileDrawer ? 'translate-0' : 'translate-x-full'} bg-surface md:static md:translate-0 md:h-auto md:w-auto`}>
 						<div className="flex justify-center bg-surface-inverse py-3 mb-4">
-							<button
-								className="md:hidden absolute top-1.5 left-2 rounded px-2 py-1 text-ink-inverse cursor-pointer"
-								type="button"
+							<Button
+								className="md:hidden absolute top-1.5 left-2 text-ink-inverse enabled:hover:bg-ink-inverse/15"
 								onClick={closeMobileDrawer}>
 								&gt;&gt;
-							</button>
+							</Button>
 							<h2 className="text-ink-inverse">Action Items</h2>
 						</div>
 						<div className="py-2 px-3 md:max-h-[calc(100vh-350px)] overflow-y-scroll">
 							{actionItems.length > 0 ? (
-								<button
-									className="rounded border border-line-strong px-2 py-1 text-ink cursor-pointer"
-									type="button"
-									onClick={handleDownload}>
+								<Button variant="secondary" onClick={handleDownload}>
 									Download
-								</button>
+								</Button>
 							) : (
 								<p className="text-center text-sm">
 									<span className="block text-5xl">{`\u{1F4DD}`}</span>

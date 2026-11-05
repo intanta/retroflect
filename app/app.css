@@ -10,23 +10,32 @@
  * Semantic tokens (in @theme below): what components use, named by role.
  *
  * To add dark theme, wrap each semantic token and set `color-scheme: light dark`:
- *   --color-surface: light-dark(var(--palette-white), var(--palette-slate-800));
+ *   --color-surface: light-dark(var(--palette-gray-25), var(--palette-blue-80));
  */
 :root {
   color-scheme: light;
 
+  /* From Figma */
+  --palette-gray-25: #fcfcfd;
+  --palette-gray-40: #e3ecf3;
+  --palette-gray-50: #667085;
+  --palette-blue-50: #007cff;
+  --palette-blue-80: #212d50;
+  --palette-green-25: #f3fddf;
+
+  /* Not in Figma yet: Tailwind defaults (tw-) and earlier app colors */
+  --palette-blue-55: #0072eb; /* Blue/50 darkened for AA contrast with white text */
+  --palette-blue-60: #005fc4;
+  --palette-pink-700: #b82555;
   --palette-white: #fff;
-  --palette-slate-300: oklch(86.9% 0.022 252.894);
-  --palette-slate-400: oklch(70.4% 0.04 256.788);
-  --palette-slate-600: oklch(44.6% 0.043 257.281);
-  --palette-slate-700: oklch(37.2% 0.044 257.287);
-  --palette-slate-800: oklch(27.9% 0.041 260.031);
-  --palette-gray-50: oklch(98.5% 0.002 247.839);
-  --palette-gray-300: oklch(87.2% 0.01 258.338);
-  --palette-lime-200: oklch(93.8% 0.127 124.321);
-  --palette-green-100: oklch(96.2% 0.044 156.743);
-  --palette-red-700: oklch(50.5% 0.213 27.518);
-  --palette-blue-700: oklch(48.8% 0.243 264.376);
+  --palette-tw-slate-400: oklch(70.4% 0.04 256.788);
+  --palette-tw-slate-700: oklch(37.2% 0.044 257.287);
+  --palette-tw-slate-800: oklch(27.9% 0.041 260.031);
+  --palette-tw-gray-50: oklch(98.5% 0.002 247.839);
+  --palette-tw-gray-300: oklch(87.2% 0.01 258.338);
+  --palette-tw-green-100: oklch(96.2% 0.044 156.743);
+  --palette-tw-red-700: oklch(50.5% 0.213 27.518);
+  --palette-tw-blue-700: oklch(48.8% 0.243 264.376);
   --palette-pink-600: #d82f65;
 }
 
@@ -38,34 +47,36 @@
   --color-*: initial;
 
   /* Backgrounds */
-  --color-canvas: var(--palette-slate-300);
-  --color-surface: var(--palette-white);
-  --color-surface-muted: var(--palette-gray-50);
-  --color-surface-inverse: var(--palette-slate-800);
-  --color-note: var(--palette-lime-200);
+  --color-canvas: var(--palette-gray-40);
+  --color-surface: var(--palette-gray-25);
+  --color-surface-muted: var(--palette-tw-gray-50);
+  --color-surface-inverse: var(--palette-tw-slate-800);
+  --color-note: var(--palette-green-25);
 
   /* Text and icons */
-  --color-ink: var(--palette-slate-800);
-  --color-ink-muted: var(--palette-slate-600);
-  --color-ink-disabled: var(--palette-slate-400);
+  --color-ink: var(--palette-blue-80);
+  --color-ink-muted: var(--palette-gray-50);
+  --color-ink-disabled: var(--palette-tw-slate-400);
   --color-ink-inverse: var(--palette-white);
 
   /* Borders */
-  --color-line: var(--palette-slate-700);
-  --color-line-strong: var(--palette-slate-800);
-  --color-line-subtle: var(--palette-gray-300);
-  --color-line-disabled: var(--palette-slate-400);
+  --color-line: var(--palette-tw-slate-700);
+  --color-line-strong: var(--palette-tw-slate-800);
+  --color-line-subtle: var(--palette-tw-gray-300);
+  --color-line-disabled: var(--palette-tw-slate-400);
 
   /* Interactive */
-  --color-action: var(--palette-slate-800);
+  --color-action: var(--palette-blue-55);
+  --color-action-hover: var(--palette-blue-60);
   --color-on-action: var(--palette-white);
-  --color-focus: var(--palette-blue-700);
+  --color-focus: var(--palette-tw-blue-700);
 
   /* Status */
   --color-danger: var(--palette-pink-600);
+  --color-danger-hover: var(--palette-pink-700);
   --color-on-danger: var(--palette-white);
-  --color-danger-ink: var(--palette-red-700);
-  --color-success-surface: var(--palette-green-100);
+  --color-danger-ink: var(--palette-tw-red-700);
+  --color-success-surface: var(--palette-tw-green-100);
 }
 
 @layer base {

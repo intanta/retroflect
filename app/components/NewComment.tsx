@@ -2,6 +2,7 @@ import { useFetcher } from 'react-router'
 import { useEffect, useRef } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { SendIcon } from './Icons/SendIcon'
 import { TrashIcon } from './Icons/TrashIcon'
 import { EmojiPicker } from './EmojiPicker'
@@ -71,21 +72,18 @@ export function NewComment({
 			<input type="hidden" name="columnId" value={columnId} />
 			{commentId ? <input type="hidden" name="commentId" value={commentId} /> : null}
 			<div className="flex justify-between pt-6">
-				<button
-					aria-label="Discard"
-					className="border border-line-strong rounded-md p-2 text-sm cursor-pointer"
-					onClick={onDiscard}
-					type="button">
+				<Button variant="secondary" className="p-2 text-sm" onClick={onDiscard}>
 					Cancel
-					{/* <TrashIcon className="size-5 text-ink" /> */}
-				</button>
-				<button
+				</Button>
+				<Button
 					aria-label="Save"
-					className="p-2 rounded-md bg-action cursor-pointer"
+					type="submit"
+					variant="primary"
+					className="p-2"
 					name="_intent"
 					value={currentText ? 'edit' : 'add'}>
-					<SendIcon className="size-5 text-on-action" />
-				</button>
+					<SendIcon className="size-5" />
+				</Button>
 			</div>
 		</fetcher.Form>
 	)
