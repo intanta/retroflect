@@ -1,13 +1,87 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap');
+
 @import "tailwindcss";
 
+/*
+ * Color system
+ *
+ * Palette: raw color values. These generate no utilities, so components can't
+ * use them directly.
+ * Semantic tokens (in @theme below): what components use, named by role.
+ *
+ * To add dark theme, wrap each semantic token and set `color-scheme: light dark`:
+ *   --color-surface: light-dark(var(--palette-gray-25), var(--palette-blue-80));
+ */
+:root {
+  color-scheme: light;
+
+  /* From Figma */
+  --palette-gray-25: #fcfcfd;
+  --palette-gray-40: #e3ecf3;
+  --palette-gray-50: #949494;
+  --palette-gray-60: #667085;
+  --palette-blue-50: #007cff;
+  --palette-blue-80: #212d50;
+  --palette-green-25: #edfccf;
+
+  /* Not in Figma yet: Tailwind defaults (tw-) and earlier app colors */
+  --palette-blue-55: #0072eb; /* Blue/50 darkened for AA contrast with white text */
+  --palette-blue-60: #005fc4;
+  --palette-blue-70: #3a4770; /* Blue/80 lightened, for hover on ink backgrounds */
+  --palette-pink-700: #b82555;
+  --palette-white: #fff;
+  --palette-tw-slate-400: oklch(70.4% 0.04 256.788);
+  --palette-tw-slate-700: oklch(37.2% 0.044 257.287);
+  --palette-tw-slate-800: oklch(27.9% 0.041 260.031);
+  --palette-tw-gray-50: oklch(98.5% 0.002 247.839);
+  --palette-tw-gray-300: oklch(87.2% 0.01 258.338);
+  --palette-tw-green-100: oklch(96.2% 0.044 156.743);
+  --palette-tw-red-700: oklch(50.5% 0.213 27.518);
+  --palette-tw-blue-700: oklch(48.8% 0.243 264.376);
+  --palette-pink-600: #d82f65;
+}
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Removes Tailwind's default palette: only the tokens below are available. */
+  --color-*: initial;
+
+  /* Backgrounds */
+  --color-canvas: var(--palette-gray-40);
+  --color-surface: var(--palette-gray-25);
+  --color-surface-muted: var(--palette-tw-gray-50);
+  --color-note: var(--palette-green-25);
+
+  /* Text and icons */
+  --color-ink: var(--palette-blue-80);
+  --color-ink-hover: var(--palette-blue-70); /* ink used as a background */
+  --color-ink-muted: var(--palette-gray-60);
+  --color-ink-disabled: var(--palette-tw-slate-400);
+
+  /* Borders */
+  --color-line: var(--palette-tw-slate-700);
+  --color-line-strong: var(--palette-tw-slate-800);
+  --color-line-subtle: var(--palette-gray-50);
+  --color-line-disabled: var(--palette-tw-slate-400);
+
+  /* Interactive */
+  --color-action: var(--palette-blue-55);
+  --color-action-hover: var(--palette-blue-60);
+  --color-on-action: var(--palette-white);
+  --color-focus: var(--palette-tw-blue-700);
+
+  /* Status */
+  --color-danger: var(--palette-pink-600);
+  --color-danger-hover: var(--palette-pink-700);
+  --color-on-danger: var(--palette-white);
+  --color-danger-ink: var(--palette-tw-red-700);
+  --color-success-surface: var(--palette-tw-green-100);
 }
 
 @layer base {
   body {
-    @apply font-mono;
+    @apply bg-canvas text-ink font-sans;
   }
 }

@@ -159,7 +159,7 @@ function SortableHeader({
 			<Link
 				to={getSortHref(column, currentSort, currentDirection)}
 				aria-label={`Sort by ${label}, ${nextDirectionLabel}`}
-				className="flex items-center gap-1 font-semibold hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700">
+				className="flex items-center gap-1 font-semibold hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
 				{label}
 				<span aria-hidden="true">
 					{isActive ? (currentDirection === 'asc' ? '▲' : '▼') : '↕'}
@@ -195,13 +195,13 @@ function ActionItemRow({ item }: ActionItemRowProps) {
 	const displayedStatus = pendingStatus ?? item.status
 	const rowClassName =
 		displayedStatus === 'COMPLETED'
-			? 'bg-green-100'
+			? 'bg-success-surface'
 			: displayedStatus === 'NOT_NEEDED'
-				? 'text-gray-400 bg-gray-50'
+				? 'text-ink-disabled bg-surface-muted'
 				: ''
 
 	return (
-		<tr className={`border-b border-gray-300 text-sm ${rowClassName}`}>
+		<tr className={`border-b border-line-subtle text-sm ${rowClassName}`}>
 			<td className="p-3 align-top">{item.text}</td>
 			<td className="hidden p-3 align-top md:table-cell">{item.assignee}</td>
 			<td className="p-3 align-top">
@@ -221,7 +221,7 @@ function ActionItemRow({ item }: ActionItemRowProps) {
 							setPendingStatus(nextStatus)
 							event.currentTarget.form?.requestSubmit()
 						}}
-						className="w-full rounded border border-gray-400 bg-white p-1">
+						className="w-full rounded border border-line bg-surface p-1">
 						{STATUS_OPTIONS.map((statusOption) => (
 							<option key={statusOption} value={statusOption} className="capitalize">
 								{statusOption.toLowerCase().replaceAll('_', ' ')}
@@ -235,7 +235,7 @@ function ActionItemRow({ item }: ActionItemRowProps) {
 				<div
 					role={errorMessage ? 'alert' : isSubmittingThisRow ? 'status' : undefined}
 					id={errorMessage ? errorId : undefined}
-					className={`mt-1 h-9 text-sm leading-tight ${errorMessage ? 'text-red-700' : 'text-gray-600'}`}>
+					className={`mt-1 h-9 text-sm leading-tight ${errorMessage ? 'text-danger-ink' : 'text-ink-muted'}`}>
 					{errorMessage ?? (isSubmittingThisRow ? 'Saving…' : '')}
 				</div>
 				<span aria-live="polite" className="sr-only">
@@ -263,14 +263,14 @@ export default function StatusTablePoc({ loaderData }: StatusTablePocProps) {
 	const { actionItems } = loaderData
 
 	return (
-		<div className="lg:w-[90%] 2xl:w-[1400px] mx-auto p-6">
+		<div className="lg:w-[90%] 2xl:w-[1400px] mx-auto p-6 bg-surface rounded-lg">
 			<h1 className="mb-2 text-2xl font-bold">Action Items</h1>
-			{/* <p className="mb-4 text-gray-700">
+			{/* <p className="mb-4 text-ink-muted">
 				Changing an item&apos;s status saves immediately. Completed items are
 				highlighted in green; items marked Not Needed are greyed out.
 			</p> */}
 			<div className="overflow-x-auto">
-				<table className="w-full table-fixed border-collapse text-left bg-white">
+				<table className="w-full table-fixed border-collapse text-left">
 					<caption className="sr-only">
 						Action items, sortable by status and creation date
 					</caption>
@@ -284,7 +284,7 @@ export default function StatusTablePoc({ loaderData }: StatusTablePocProps) {
 						<col className="hidden md:table-column md:w-44" />
 					</colgroup>
 					<thead>
-						<tr className="border-b border-gray-300">
+						<tr className="border-b border-line-subtle">
 							<th scope="col" className="p-3 font-semibold">
 								Description
 							</th>

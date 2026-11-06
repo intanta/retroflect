@@ -15,6 +15,10 @@ import { z } from 'zod'
 import { db } from '~/lib/db.server'
 import { getSession } from '~/lib/session.server'
 import { supabase } from '~/lib/supabase'
+import { Button } from '~/components/Button'
+import type { RouteHandle } from '~/root'
+
+export const handle: RouteHandle = { showProgress: true }
 
 export const meta: MetaFunction = () => {
 	return [{ title: 'Retroflect - Retro in progress' }]
@@ -144,22 +148,20 @@ export default function Board({ loaderData }: BoardProps) {
 	}
 
 	return (
-		<div className="flex h-screen flex-col p-5">
-			<div className="flex justify-between py-5 border-b">
-				<h1 className="text-2xl font-bold">{config[status].heading}</h1>
+		<div className="flex flex-1 flex-col p-5 md:p-10 bg-surface rounded-3xl">
+			<div className="flex justify-between items-center pb-5">
+				<h1 className="text-2xl md:text-4xl font-bold">{config[status].heading}</h1>
 				{isHost ? (
 					<Form method="post">
 						<input type="hidden" name="retroStatus" value={status} />
-						<button
-							className="text-slate-800 text-lg font-bold underline cursor-pointer"
-							type="submit">
+						<Button variant="primary" type="submit" className="px-4 py-2 md:py-3">
 							{config[status].ctaLabel}
-						</button>
+						</Button>
 					</Form>
 				) : null}
 				{!isHost && isNextStepAvailable && config[status].ctaLink ? (
 					<Link
-						className="text-slate-800 text-lg font-bold underline"
+						className="rounded-xl bg-action px-4 py-3 text-xl text-on-action"
 						to={config[status].ctaLink}>
 						{config[status].ctaLabel}
 					</Link>

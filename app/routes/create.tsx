@@ -7,7 +7,9 @@ import {
 } from 'react-router'
 import { z } from 'zod'
 
+import { Button } from '~/components/Button'
 import { CopyIcon } from '~/components/Icons/CopyIcon'
+import { CircledCheckIcon } from '~/components/Icons/CircledCheckIcon'
 
 import { db } from '~/lib/db.server'
 import { getSession, commitSession } from '~/lib/session.server'
@@ -38,19 +40,13 @@ export async function action({ request }: ActionFunctionArgs) {
 	try {
 		const newRetro = await db.retro.create({
 			data: {
-				team: team ?? 'Unknown team',
+				team: team ?? 'Anonymous Team',
 				sprint: sprint ?? null,
 				categories: {
 					create: retroCategories,
 				},
 			},
 		})
-
-		// const hostUser = await db.user.create({
-		// 	data: {
-		// 		retroId: newRetro.id,
-		// 	},
-		// })
 
 		const session = await getSession(request.headers.get('Cookie'))
 
@@ -87,82 +83,87 @@ export default function Create({ actionData }: CreateRetroProps) {
 	}
 
 	return (
-		<div className="flex h-screen flex-col justify-center items-center">
-			<h1 className="pb-3 text-3xl text-slate-800 font-bold">
-				Create a new Retro board
-			</h1>
+		<div className="flex flex-1 flex-col sm:justify-center items-center px-2.5">
 			{retroId ? (
-				<>
-					<p className="py-2">
-						Your retro board has been created. Please share the code below with your
-						team
+				<div className="sm:w-2/3 md:w-[700px] bg-surface rounded-3xl p-10 shadow-lg text-center">
+					<CircledCheckIcon className="mx-auto mb-8" />
+					<h1 className="text-4xl text-ink font-bold">
+						Your retro board has been created
+					</h1>
+					<p className="pt-2 text-ink-muted">
+						Please share the code below with your team
 					</p>
-					<p className="flex gap-3 text-2xl pb-3">
+					<p className="w-full flex justify-center gap-3 text-2xl py-10">
 						<span>{retroId}</span>
-						<button
+						<Button
 							aria-label="Copy the code for your retro board to clipboard"
-							className="cursor-pointer"
-							type="button"
+							variant="secondary-ghost"
 							onClick={handleCopyToClipboard}>
 							<CopyIcon className="size-6" />
-						</button>
+						</Button>
 					</p>
 					<Link
-						className="text-slate-800 text-lg font-bold underline"
+						className="block w-full rounded-xl bg-action px-4 py-3 text-xl text-on-action text-center"
 						to={`/board/${retroId}/reflect`}>
-						Go to retro
+						Go to Retro
 					</Link>
-				</>
+				</div>
 			) : (
-				<Form className="pt-3" method="post">
-					<label className="text-sm font-semibold" htmlFor="team">
-						Team name
-					</label>
-					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
-						id="team"
-						name="team"
-						defaultValue="Disturbed"
-					/>
-					<label className="text-sm font-semibold" htmlFor="sprint">
-						Sprint
-					</label>
-					<input
-						className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
-						id="sprint"
-						name="sprint"
-						defaultValue="0001"
-					/>
-					<fieldset className="my-3">
-						<legend className="text-sm font-semibold">
-							Customize your board columns
-						</legend>
+				<div className="sm:w-2/3 md:w-[600px] bg-surface rounded-3xl p-10 shadow-lg">
+					<h1 className="pb-10 text-2xl text-ink font-bold">
+						Create a new Retro board
+					</h1>
+					<Form method="post">
+						<label className="text-sm text-ink-muted font-semibold" htmlFor="team">
+							Team name
+						</label>
 						<input
-							aria-label="First column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
-							name="column"
-							defaultValue="What went well"
+							className="block w-full rounded-xl border border-line-subtle bg-surface p-2 mb-4"
+							id="team"
+							name="team"
+							defaultValue="Disturbed"
 						/>
+						<label className="text-sm text-ink-muted font-semibold" htmlFor="sprint">
+							Sprint
+						</label>
 						<input
-							aria-label="Second column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
-							name="column"
-							defaultValue="What went wrong"
+							className="block w-full rounded-xl border border-line-subtle bg-surface p-2 mb-4"
+							id="sprint"
+							name="sprint"
+							defaultValue="0001"
 						/>
-						<input
-							aria-label="Third column"
-							className="block w-80 rounded-sm border border-slate-700 bg-white p-2 mb-2"
-							name="column"
-							defaultValue="Gratitudes"
-						/>
-					</fieldset>
-					<input type="hidden" name="uuid" value={crypto.randomUUID()} />
-					<div className="text-center pt-3">
-						<button className="rounded bg-slate-800 px-4 py-3 text-xl text-white cursor-pointer">
+						<fieldset className="my-3">
+							<legend className="text-sm text-ink-muted font-semibold">
+								Customize your board columns
+							</legend>
+							<input
+								aria-label="First column"
+								className="block w-full rounded-xl border border-line-subtle bg-surface p-2 mb-3"
+								name="column"
+								defaultValue="What went well"
+							/>
+							<input
+								aria-label="Second column"
+								className="block w-full rounded-xl border border-line-subtle bg-surface p-2 mb-3"
+								name="column"
+								defaultValue="What went wrong"
+							/>
+							<input
+								aria-label="Third column"
+								className="block w-full rounded-xl border border-line-subtle bg-surface p-2 mb-3"
+								name="column"
+								defaultValue="Gratitudes"
+							/>
+						</fieldset>
+						<input type="hidden" name="uuid" value={crypto.randomUUID()} />
+						<Button
+							type="submit"
+							variant="primary"
+							className="block w-full mt-10 py-4">
 							Create Retro Board
-						</button>
-					</div>
-				</Form>
+						</Button>
+					</Form>
+				</div>
 			)}
 		</div>
 	)

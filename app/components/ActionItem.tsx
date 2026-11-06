@@ -2,6 +2,7 @@ import { useFetcher } from 'react-router'
 import { useState, useEffect, useRef } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { EditIcon } from './Icons/EditIcon'
 
 const actionItemSchema = z.object({
@@ -51,35 +52,41 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 	if (isEditing) {
 		return (
 			<li key={id} className="pb-4">
-				<fetcher.Form method="post" className="" onSubmit={handleSave}>
-					<label htmlFor="action">Action item</label>
+				<fetcher.Form
+					method="post"
+					className="bg-surface p-2 rounded-xl"
+					onSubmit={handleSave}>
+					<label htmlFor="action" className="text-sm text-ink-muted font-semibold">
+						Action item
+					</label>
 					<textarea
-						className="block w-full h-28 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+						className="block w-full h-28 rounded-xl border border-line-subtle p-1 mb-2 font-sans"
 						id="action"
 						name="action"
 						defaultValue={text}
 					/>
-					<label htmlFor="assignee">Assignee</label>
+					<label htmlFor="assignee" className="text-sm text-ink-muted font-semibold">
+						Assignee
+					</label>
 					<input
-						className="block w-full md:w-80 rounded-sm border border-slate-700 bg-white p-1 mb-2 font-sans"
+						className="block w-full md:w-80 rounded-xl border border-line-subtle p-1 mb-2 font-sans"
 						id="assignee"
 						name="assignee"
 						defaultValue={assignee}
 					/>
 					<input type="hidden" name="id" value={id} />
 					<div className="flex justify-end gap-2 pt-5">
-						<button
-							className="w-20 rounded border border-slate-800 px-2 py-1 text-slate-800 cursor-pointer"
-							onClick={handleCancel}
-							type="button">
+						<Button variant="tertiary" className="w-20" onClick={handleCancel}>
 							Cancel
-						</button>
-						<button
-							className="w-20 border border-slate-800 rounded bg-slate-800 px-2 py-1 text-white cursor-pointer"
+						</Button>
+						<Button
+							type="submit"
+							variant="primary"
+							className="w-20"
 							name="_intent"
 							value="edit">
 							Save
-						</button>
+						</Button>
 					</div>
 				</fetcher.Form>
 			</li>
@@ -88,15 +95,15 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 
 	return (
 		<li key={id} className="pb-4">
-			<p className="relative pr-6">
+			<p className="relative pr-10">
 				{text}
-				<button
+				<Button
 					aria-label={`Edit action item ${text}`}
-					type="button"
-					className="absolute top-0 right-0 cursor-pointer"
+					variant="secondary-ghost"
+					className="absolute top-0 right-0 p-2"
 					onClick={handleEdit}>
 					<EditIcon />
-				</button>
+				</Button>
 			</p>
 			<span className="text-sm">Assignee: {assignee}</span>
 		</li>

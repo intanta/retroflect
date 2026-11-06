@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { FaceIcon } from './Icons/FaceIcon'
 
 const categorySchema = z.union([z.literal('faces'), z.literal('symbols')])
@@ -140,28 +141,27 @@ export function EmojiPicker({ className, onPick }: EmojiPickerProps) {
 			className={`inline-block absolute ${className}`}
 			onKeyDown={handleKeyDown}
 			ref={containerRef}>
-			<button
+			<Button
 				aria-label="emoji picker"
-				className="cursor-pointer"
-				onClick={handleTriggerClick}
-				type="button">
-				<FaceIcon className="fill-slate-500" />
-			</button>
+				variant="secondary-ghost"
+				className="p-2"
+				onClick={handleTriggerClick}>
+				<FaceIcon className="fill-ink-muted" />
+			</Button>
 			<div
-				className={`${isOpen ? 'block' : 'hidden'} absolute top-6 right-0 w-[178px] p-2 bg-white border border-slate-900`}>
+				className={`${isOpen ? 'block' : 'hidden'} absolute top-8 right-0 w-[178px] p-2 bg-surface border border-line-strong`}>
 				{categories.map((category) => {
 					return (
 						<div key={category}>
 							{emojiList[category].map((emoji, i) => {
 								return (
-									<button
+									<Button
 										aria-label={emoji.label}
-										className="px-2 py-1 text-2xl cursor-pointer"
+										className="text-2xl enabled:hover:bg-ink/10"
 										key={i}
-										onClick={handlePick}
-										type="button">
+										onClick={handlePick}>
 										{emoji.unicode}
-									</button>
+									</Button>
 								)
 							})}
 						</div>

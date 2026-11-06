@@ -2,6 +2,7 @@ import { useFetcher } from 'react-router'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { NewComment } from './NewComment'
 import { CircledPlusIcon } from './Icons/CircledPlusIcon'
 import { EditIcon } from './Icons/EditIcon'
@@ -74,15 +75,14 @@ export function BoardColumn({
 
 	return (
 		<div className="py-3">
-			<div className="flex justify-center gap-2 bg-slate-800 py-3 mb-4">
-				<h2 className="text-white">{name}</h2>
-				<button
+			<div className="flex justify-between items-center gap-2 py-3">
+				<h2 className="font-semibold">{name}</h2>
+				<Button
 					aria-label={`Add new comment under ${name}`}
-					className="cursor-pointer"
-					type="button"
+					variant="ghost"
 					onClick={handleAdd}>
-					<CircledPlusIcon className="text-white" />
-				</button>
+					<CircledPlusIcon className="mr-2" /> Add
+				</Button>
 			</div>
 
 			{comments
@@ -101,27 +101,28 @@ export function BoardColumn({
 						}
 						return (
 							<div
-								className="bg-lime-200 p-6 pb-4 font-sans mb-4 shadow-md"
+								className="bg-note p-6 pb-4 rounded-xl mb-4 shadow-md"
 								key={comment.id}>
 								<p className="pb-6 wrap-break-word">{comment.text}</p>
 								<div className="flex justify-between">
-									<button
+									<Button
 										aria-label="Edit comment"
-										className="cursor-pointer"
-										type="button"
+										variant="secondary-ghost"
+										className="-ml-2"
 										onClick={() => handleEdit(comment.id)}>
-										<EditIcon className="text-slate-800" />
-									</button>
+										<EditIcon />
+									</Button>
 									<fetcher.Form method="post">
 										<input type="hidden" name="commentId" value={comment.id} />
-										<button
+										<Button
 											aria-label="Delete comment"
-											className="p-2 rounded-md bg-[#D82F65CC] cursor-pointer"
+											variant="danger"
+											className="p-2"
 											name="_intent"
 											value="delete"
 											type="submit">
-											<TrashIcon className="size-5 text-white" />
-										</button>
+											<TrashIcon className="size-5" />
+										</Button>
 									</fetcher.Form>
 								</div>
 							</div>

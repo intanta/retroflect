@@ -2,6 +2,7 @@ import { useFetcher } from 'react-router'
 import { useEffect, useRef } from 'react'
 import { z } from 'zod'
 
+import { Button } from './Button'
 import { SendIcon } from './Icons/SendIcon'
 import { TrashIcon } from './Icons/TrashIcon'
 import { EmojiPicker } from './EmojiPicker'
@@ -54,13 +55,13 @@ export function NewComment({
 
 	return (
 		<fetcher.Form
-			className="bg-lime-200 p-6 pb-4 mb-4"
+			className="bg-note rounded-xl p-6 pb-4 mb-4"
 			method="post"
 			onSubmit={handleSave}>
 			<div className="relative">
 				<textarea
 					aria-label="Comment"
-					className="block w-full h-32 border border-slate-600 rounded bg-white font-sans p-1 pr-8"
+					className="block w-full h-32 border border-line rounded bg-surface font-sans p-1 pr-8"
 					name="comment"
 					ref={textareaRef}
 					maxLength={450}
@@ -71,21 +72,18 @@ export function NewComment({
 			<input type="hidden" name="columnId" value={columnId} />
 			{commentId ? <input type="hidden" name="commentId" value={commentId} /> : null}
 			<div className="flex justify-between pt-6">
-				<button
-					aria-label="Discard"
-					className="border border-slate-800 rounded-md p-2 text-sm cursor-pointer"
-					onClick={onDiscard}
-					type="button">
+				<Button variant="tertiary" className="p-2 text-sm" onClick={onDiscard}>
 					Cancel
-					{/* <TrashIcon className="size-5 text-slate-800" /> */}
-				</button>
-				<button
+				</Button>
+				<Button
 					aria-label="Save"
-					className="p-2 rounded-md bg-slate-800 cursor-pointer"
+					type="submit"
+					variant="secondary"
+					className="p-2"
 					name="_intent"
 					value={currentText ? 'edit' : 'add'}>
-					<SendIcon className="size-5 text-white" />
-				</button>
+					<SendIcon className="size-5" />
+				</Button>
 			</div>
 		</fetcher.Form>
 	)
