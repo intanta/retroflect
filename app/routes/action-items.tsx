@@ -263,14 +263,14 @@ export default function StatusTablePoc({ loaderData }: StatusTablePocProps) {
 	const { actionItems } = loaderData
 
 	return (
-		<div className="lg:w-[90%] 2xl:w-[1400px] mx-auto p-6">
+		<div className="lg:w-[90%] 2xl:w-[1400px] mx-auto p-6 bg-surface rounded-lg">
 			<h1 className="mb-2 text-2xl font-bold">Action Items</h1>
 			{/* <p className="mb-4 text-ink-muted">
 				Changing an item&apos;s status saves immediately. Completed items are
 				highlighted in green; items marked Not Needed are greyed out.
 			</p> */}
 			<div className="overflow-x-auto">
-				<table className="w-full table-fixed border-collapse text-left bg-surface">
+				<table className="w-full table-fixed border-collapse text-left">
 					<caption className="sr-only">
 						Action items, sortable by status and creation date
 					</caption>

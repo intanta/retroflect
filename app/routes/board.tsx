@@ -148,22 +148,20 @@ export default function Board({ loaderData }: BoardProps) {
 	}
 
 	return (
-		<div className="flex flex-1 flex-col p-5">
-			<div className="flex justify-between py-5 border-b">
-				<h1 className="text-2xl font-bold">{config[status].heading}</h1>
+		<div className="flex flex-1 flex-col p-5 md:p-10 bg-surface rounded-3xl">
+			<div className="flex justify-between items-center pb-5">
+				<h1 className="text-2xl md:text-4xl font-bold">{config[status].heading}</h1>
 				{isHost ? (
 					<Form method="post">
 						<input type="hidden" name="retroStatus" value={status} />
-						<Button
-							className="p-0 text-ink text-lg font-bold underline enabled:hover:no-underline"
-							type="submit">
+						<Button variant="primary" type="submit" className="px-4 py-2 md:py-3">
 							{config[status].ctaLabel}
 						</Button>
 					</Form>
 				) : null}
 				{!isHost && isNextStepAvailable && config[status].ctaLink ? (
 					<Link
-						className="text-ink text-lg font-bold underline"
+						className="rounded-xl bg-action px-4 py-3 text-xl text-on-action"
 						to={config[status].ctaLink}>
 						{config[status].ctaLabel}
 					</Link>

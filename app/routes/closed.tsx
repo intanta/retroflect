@@ -9,11 +9,9 @@ export const meta: MetaFunction = () => {
 
 export default function ClosedRetro() {
 	return (
-		<div className="flex flex-1 flex-col justify-center items-center gap-5 bg-surface-inverse">
-			<h1 className="text-ink-inverse text-3xl">Thank you!</h1>
-			<p className="text-ink-inverse text-2xl">
-				Your retro is now closed. See you next time! 👋
-			</p>
+		<div className="flex flex-1 flex-col justify-center items-center gap-5">
+			<h1 className="text-4xl font-bold">Thank you!</h1>
+			<p className="text-3xl">Your retro is now closed. See you next time! 👋</p>
 		</div>
 	)
 }

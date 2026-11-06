@@ -75,13 +75,13 @@ export function BoardColumn({
 
 	return (
 		<div className="py-3">
-			<div className="flex justify-center gap-2 bg-surface-inverse py-3 mb-4">
-				<h2 className="text-ink-inverse">{name}</h2>
+			<div className="flex justify-between items-center gap-2 py-3">
+				<h2 className="font-semibold">{name}</h2>
 				<Button
 					aria-label={`Add new comment under ${name}`}
-					className="p-0 text-ink-inverse enabled:hover:bg-ink-inverse/15"
+					variant="ghost"
 					onClick={handleAdd}>
-					<CircledPlusIcon />
+					<CircledPlusIcon className="mr-2" /> Add
 				</Button>
 			</div>
 
@@ -101,14 +101,14 @@ export function BoardColumn({
 						}
 						return (
 							<div
-								className="bg-note p-6 pb-4 font-sans mb-4 shadow-md"
+								className="bg-note p-6 pb-4 rounded-xl mb-4 shadow-md"
 								key={comment.id}>
 								<p className="pb-6 wrap-break-word">{comment.text}</p>
 								<div className="flex justify-between">
 									<Button
 										aria-label="Edit comment"
 										variant="secondary-ghost"
-										className="p-1.5 -ml-2"
+										className="-ml-2"
 										onClick={() => handleEdit(comment.id)}>
 										<EditIcon />
 									</Button>

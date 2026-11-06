@@ -52,24 +52,31 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 	if (isEditing) {
 		return (
 			<li key={id} className="pb-4">
-				<fetcher.Form method="post" className="" onSubmit={handleSave}>
-					<label htmlFor="action">Action item</label>
+				<fetcher.Form
+					method="post"
+					className="bg-surface p-2 rounded-xl"
+					onSubmit={handleSave}>
+					<label htmlFor="action" className="text-sm text-ink-muted font-semibold">
+						Action item
+					</label>
 					<textarea
-						className="block w-full h-28 rounded-sm border border-line bg-surface p-1 mb-2 font-sans"
+						className="block w-full h-28 rounded-xl border border-line-subtle p-1 mb-2 font-sans"
 						id="action"
 						name="action"
 						defaultValue={text}
 					/>
-					<label htmlFor="assignee">Assignee</label>
+					<label htmlFor="assignee" className="text-sm text-ink-muted font-semibold">
+						Assignee
+					</label>
 					<input
-						className="block w-full md:w-80 rounded-sm border border-line bg-surface p-1 mb-2 font-sans"
+						className="block w-full md:w-80 rounded-xl border border-line-subtle p-1 mb-2 font-sans"
 						id="assignee"
 						name="assignee"
 						defaultValue={assignee}
 					/>
 					<input type="hidden" name="id" value={id} />
 					<div className="flex justify-end gap-2 pt-5">
-						<Button variant="secondary" className="w-20" onClick={handleCancel}>
+						<Button variant="tertiary" className="w-20" onClick={handleCancel}>
 							Cancel
 						</Button>
 						<Button
@@ -88,12 +95,12 @@ export function ActionItemEntry({ data }: ActionItemEntryProps) {
 
 	return (
 		<li key={id} className="pb-4">
-			<p className="relative pr-6">
+			<p className="relative pr-10">
 				{text}
 				<Button
 					aria-label={`Edit action item ${text}`}
 					variant="secondary-ghost"
-					className="absolute top-0 right-0 p-1 -m-1.5"
+					className="absolute top-0 right-0 p-2"
 					onClick={handleEdit}>
 					<EditIcon />
 				</Button>

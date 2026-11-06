@@ -55,7 +55,7 @@ export function NewComment({
 
 	return (
 		<fetcher.Form
-			className="bg-note p-6 pb-4 mb-4"
+			className="bg-note rounded-xl p-6 pb-4 mb-4"
 			method="post"
 			onSubmit={handleSave}>
 			<div className="relative">
@@ -72,13 +72,13 @@ export function NewComment({
 			<input type="hidden" name="columnId" value={columnId} />
 			{commentId ? <input type="hidden" name="commentId" value={commentId} /> : null}
 			<div className="flex justify-between pt-6">
-				<Button variant="secondary" className="p-2 text-sm" onClick={onDiscard}>
+				<Button variant="tertiary" className="p-2 text-sm" onClick={onDiscard}>
 					Cancel
 				</Button>
 				<Button
 					aria-label="Save"
 					type="submit"
-					variant="primary"
+					variant="secondary"
 					className="p-2"
 					name="_intent"
 					value={currentText ? 'edit' : 'add'}>

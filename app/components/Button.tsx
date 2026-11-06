@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react'
 
 const baseClasses =
-	'inline-flex items-center justify-center rounded-md cursor-pointer transition-colors disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2'
+	'inline-flex items-center justify-center rounded-xl cursor-pointer transition-colors disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2'
 
 // :where() gives these zero specificity, so any padding class passed through
 // `className` wins. With plain px-2 py-1, stylesheet order would decide instead
@@ -14,6 +14,8 @@ const variantClasses = {
 	ghost:
 		'border border-transparent text-action enabled:hover:bg-action/10 enabled:hover:text-action-hover focus-visible:outline-action disabled:text-ink-disabled',
 	secondary:
+		'border border-transparent bg-ink text-on-action enabled:hover:bg-ink-hover focus-visible:outline-ink disabled:bg-surface-muted disabled:text-ink-disabled',
+	tertiary:
 		'border border-line-strong text-ink enabled:hover:bg-ink/10 focus-visible:outline-ink disabled:border-line-disabled disabled:text-ink-disabled',
 	'secondary-ghost':
 		'border border-transparent text-ink enabled:hover:bg-ink/10 focus-visible:outline-ink disabled:text-ink-disabled',

@@ -13,6 +13,7 @@ import { db } from '~/lib/db.server'
 import { getSession } from '~/lib/session.server'
 
 import { Button } from '~/components/Button'
+import { DownloadIcon } from '~/components/Icons/DownloadIcon'
 import { HourGlassIcon } from '~/components/Icons/HourGlassIcon'
 import { ThumbsUpIcon } from '~/components/Icons/ThumbsUpIcon'
 import { ChevronIcon } from '~/components/Icons/ChevronIcon'
@@ -44,9 +45,9 @@ export function ErrorBoundary() {
 
 	if (isErrorData(error)) {
 		return (
-			<div className="flex flex-1 flex-col justify-center items-center gap-5 bg-surface-inverse">
-				<HourGlassIcon className="w-30 h-30 text-ink-inverse" />
-				<p className="text-ink-inverse text-3xl">{error.data.message}</p>
+			<div className="flex flex-1 flex-col justify-center items-center gap-5">
+				<HourGlassIcon className="size-30" />
+				<p className="text-4xl font-bold">{error.data.message}</p>
 			</div>
 		)
 	}
@@ -247,8 +248,8 @@ export default function Review({ loaderData }: ReviewProps) {
 
 	if (!comments?.length) {
 		return (
-			<div className="flex flex-1 flex-col justify-center items-center gap-5 bg-surface-inverse">
-				<p className="text-ink-inverse text-3xl">
+			<div className="flex flex-1 flex-col justify-center items-center gap-5">
+				<p className="text-4xl font-bold">
 					Oh no! Looks like there is nothing to review
 				</p>
 			</div>
@@ -299,6 +300,10 @@ export default function Review({ loaderData }: ReviewProps) {
 	}
 
 	const handleDownload = () => {
+		if (!actionItems?.length) {
+			return
+		}
+
 		const actionItemsString = convertActionsJsonToText(actionItems)
 		const blob = new Blob([actionItemsString], { type: 'text/plain' })
 		const url = URL.createObjectURL(blob)
@@ -324,7 +329,7 @@ export default function Review({ loaderData }: ReviewProps) {
 						{comments.map((comment, i) => {
 							return (
 								<div
-									className={`w-full h-full bg-note p-4 font-sans mb-2 shadow-md overflow-y-scroll wrap-break-word ${current === i ? 'block' : 'hidden'}`}
+									className={`w-full h-full bg-note p-4 mb-2 rounded-xl shadow-md overflow-y-scroll wrap-break-word ${current === i ? 'block' : 'hidden'}`}
 									key={i}>
 									<div className="flex justify-between pb-5">
 										<span className="inline-block mb-2 py-1.5 px-2 rounded text-sm text-right text-ink-muted border border-line">
@@ -345,12 +350,12 @@ export default function Review({ loaderData }: ReviewProps) {
 							<>
 								<Button
 									variant="primary"
-									className="h-11"
+									className="h-11 px-4"
 									popoverTarget="add-action-popover">
 									Add action item
 								</Button>
 								<div
-									className="m-auto shadow-xl"
+									className="m-auto rounded-xl shadow-xl"
 									popover="auto"
 									id="add-action-popover"
 									ref={actionPopoverRef}>
@@ -360,21 +365,29 @@ export default function Review({ loaderData }: ReviewProps) {
 										onSubmit={handleSave}
 										ref={actionFormRef}>
 										{/* <input type="hidden" name="retroId" value={retroId} /> */}
-										<label htmlFor="action">Action item</label>
+										<label
+											htmlFor="action"
+											className="text-sm text-ink-muted font-semibold">
+											Action item
+										</label>
 										<textarea
-											className="block w-80 h-28 rounded-sm border border-line bg-surface p-1 mb-2 font-sans"
+											className="block w-80 h-28 rounded-xl border border-line-subtle bg-surface p-2 mb-3"
 											id="action"
 											name="action"
 										/>
-										<label htmlFor="assignee">Assignee</label>
+										<label
+											htmlFor="assignee"
+											className="text-sm text-ink-muted font-semibold">
+											Assignee
+										</label>
 										<input
-											className="block w-80 rounded-sm border border-line bg-surface p-1 mb-2 font-sans"
+											className="block w-80 rounded-xl border border-line-subtle bg-surface p-2 mb-3"
 											id="assignee"
 											name="assignee"
 										/>
 										<div className="flex justify-end gap-2 pt-5">
 											<Button
-												variant="secondary"
+												variant="tertiary"
 												className="w-20"
 												onClick={hideActionPopover}>
 												Cancel
@@ -414,26 +427,28 @@ export default function Review({ loaderData }: ReviewProps) {
 				</div>
 			</div>
 			{isHost ? (
-				<div className="absolute top-1 right-0 md:static md:basis-1/3">
+				<div className="absolute top-1 right-0 md:static md:basis-1/3 md:bg-canvas md:rounded-xl">
 					<Button
 						variant="primary"
-						className="md:hidden h-11"
+						className="md:hidden h-11 px-4"
 						onClick={openMobileDrawer}>
 						Action items ({actionItems.length})
 					</Button>
 					<div
-						className={`h-full w-5/6 fixed z-10 top-0 right-0 transition-transform ease-in duration-300 overflow-x-hidden ${showActionItemsMobileDrawer ? 'translate-0' : 'translate-x-full'} bg-surface md:static md:translate-0 md:h-auto md:w-auto`}>
-						<div className="flex justify-center bg-surface-inverse py-3 mb-4">
+						className={`h-full w-5/6 fixed z-10 top-0 right-0 transition-transform ease-in duration-300 overflow-x-hidden ${showActionItemsMobileDrawer ? 'translate-0' : 'translate-x-full'} bg-surface md:static md:translate-0 md:h-auto md:w-auto md:bg-canvas md:rounded-xl`}>
+						<div className="flex justify-center py-3 mb-4">
 							<Button
-								className="md:hidden absolute top-1.5 left-2 text-ink-inverse enabled:hover:bg-ink-inverse/15"
+								className="md:hidden absolute top-1.5 left-2"
+								variant="secondary-ghost"
 								onClick={closeMobileDrawer}>
 								&gt;&gt;
 							</Button>
-							<h2 className="text-ink-inverse">Action Items</h2>
+							<h2 className="font-semibold">Action Items</h2>
 						</div>
 						<div className="py-2 px-3 md:max-h-[calc(100vh-350px)] overflow-y-scroll">
 							{actionItems.length > 0 ? (
-								<Button variant="secondary" onClick={handleDownload}>
+								<Button variant="ghost" onClick={handleDownload}>
+									<DownloadIcon className="mr-2 relative -top-0.5" />
 									Download
 								</Button>
 							) : (

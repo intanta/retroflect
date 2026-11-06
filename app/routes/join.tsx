@@ -24,7 +24,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	const retroId = formData.get('retro-id') as string
 	const userId = formData.get('uuid') as string
-	console.log('user id ', userId)
 
 	try {
 		const retro = await db.retro.findUnique({
@@ -73,27 +72,30 @@ export default function Join({ actionData }) {
 	const error = actionData?.errorMessage
 
 	return (
-		<div className="flex flex-1 flex-col justify-center items-center">
-			<h1 className="text-3xl text-ink font-bold pb-3">
-				Join your team's Retro board
-			</h1>
-			{error ? <p className="text-danger-ink text-center">{error}</p> : null}
-			<Form className="pt-3" method="post">
-				<label className="text-sm font-semibold" htmlFor="retro-id">
-					Enter the board code
-				</label>
-				<input
-					className="block w-94 rounded-sm border border-line bg-surface p-2 mb-2"
-					id="retro-id"
-					name="retro-id"
-				/>
-				<input type="hidden" name="uuid" value={crypto.randomUUID()} />
-				<div className="text-center pt-2">
-					<Button type="submit" variant="primary" className="px-4 py-3 text-xl">
-						Join
+		<div className="flex flex-1 flex-col sm:justify-center items-center px-2.5">
+			<div className="sm:w-2/3 md:w-[700px] bg-surface rounded-3xl p-10 shadow-lg">
+				<h1 className="text-4xl text-ink font-bold pb-3 text-center">
+					Join your team's Retro board
+				</h1>
+				{error ? <p className="text-danger-ink text-center">{error}</p> : null}
+				<Form className="pt-3" method="post">
+					<label className="text-sm text-ink-muted font-semibold" htmlFor="retro-id">
+						Enter the board code
+					</label>
+					<input
+						className="block w-full rounded-xl border border-line-subtle bg-surface p-2 mb-4"
+						id="retro-id"
+						name="retro-id"
+					/>
+					<input type="hidden" name="uuid" value={crypto.randomUUID()} />
+					<Button
+						type="submit"
+						variant="primary"
+						className="block w-full mt-10 py-4">
+						Join Retro
 					</Button>
-				</div>
-			</Form>
+				</Form>
+			</div>
 		</div>
 	)
 }

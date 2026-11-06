@@ -28,7 +28,7 @@ function SiteHeader() {
 	)
 
 	return (
-		<header className="flex items-center justify-between px-5 py-3">
+		<header className="flex items-center justify-between px-5 py-5">
 			<Link to="/" className="flex items-center gap-2 text-ink">
 				<LogoIcon className="w-8 h-8" />
 				<span className="text-xl font-bold">Retroflect</span>
@@ -65,7 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="flex min-h-screen flex-col">
 				<SiteHeader />
-				<main className="flex flex-1 flex-col">{children}</main>
+				<main className="flex flex-1 flex-col px-5 pb-5">{children}</main>
 				<ScrollRestoration />
 				<Scripts />
 			</body>

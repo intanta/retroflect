@@ -41,9 +41,9 @@ export function ErrorBoundary() {
 
 	if (isErrorData(error)) {
 		return (
-			<div className="flex flex-1 flex-col justify-center items-center gap-5 bg-surface-inverse">
-				<HourGlassIcon className="w-30 h-30 text-ink-inverse" />
-				<p className="text-ink-inverse text-3xl">{error.data.message}</p>
+			<div className="flex flex-1 flex-col justify-center items-center gap-5">
+				<HourGlassIcon className="size-30" />
+				<p className="text-4xl font-bold">{error.data.message}</p>
 			</div>
 		)
 	}
@@ -192,11 +192,11 @@ export default function Vote({ loaderData }: VoteProps) {
 		<>
 			<p className="py-2">Votes left: {votesLeft}</p>
 			{columnsToRender?.length ? (
-				<div className="grid grid-cols-3 gap-4 lg:w-[1300px] mx-auto">
+				<div className="grid grid-cols-3 gap-4 lg:gap-6 xl:gap-10 lg:w-5/6 2xl:w-[1400px] mx-auto">
 					{columnsToRender.map((column) => (
 						<div key={column.id} className="flex flex-col">
-							<div className="py-3 bg-surface-inverse mb-4">
-								<h2 className="text-center text-ink-inverse">{column.name}</h2>
+							<div className="py-3">
+								<h2 className="font-semibold">{column.name}</h2>
 							</div>
 							{column.comments.map((comment) => {
 								const isUpvoted = upvotedComments.includes(comment.id)
@@ -204,7 +204,7 @@ export default function Vote({ loaderData }: VoteProps) {
 
 								return (
 									<div
-										className="bg-note p-2 font-sans mb-4 shadow-md"
+										className="bg-note p-2 rounded-xl mb-4 shadow-md"
 										key={comment.id}
 										id={comment.id}>
 										{comment.text}
@@ -213,7 +213,7 @@ export default function Vote({ loaderData }: VoteProps) {
 												aria-label="Vote for the comment"
 												aria-describedby={comment.id}
 												aria-pressed={isUpvoted ? true : false}
-												variant={isUpvoted ? 'primary' : 'secondary-ghost'}
+												variant={isUpvoted ? 'secondary' : 'secondary-ghost'}
 												className={`p-2 ${isDisabled ? 'cursor-default! hover:bg-transparent!' : ''}`}
 												onClick={() => handleVote(comment.id)}>
 												<ThumbsUpIcon

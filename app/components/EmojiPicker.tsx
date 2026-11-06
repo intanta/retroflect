@@ -144,12 +144,12 @@ export function EmojiPicker({ className, onPick }: EmojiPickerProps) {
 			<Button
 				aria-label="emoji picker"
 				variant="secondary-ghost"
-				className="p-0"
+				className="p-2"
 				onClick={handleTriggerClick}>
 				<FaceIcon className="fill-ink-muted" />
 			</Button>
 			<div
-				className={`${isOpen ? 'block' : 'hidden'} absolute top-6 right-0 w-[178px] p-2 bg-surface border border-line-strong`}>
+				className={`${isOpen ? 'block' : 'hidden'} absolute top-8 right-0 w-[178px] p-2 bg-surface border border-line-strong`}>
 				{categories.map((category) => {
 					return (
 						<div key={category}>
