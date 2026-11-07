@@ -8,6 +8,4 @@
 # Vercel
 /.vercel/
 
-/prisma/migrations
-
 .env
