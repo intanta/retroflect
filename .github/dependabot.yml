@@ -1,0 +1,49 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Only propose versions that have been public for a while. Most malicious releases are
+    # spotted and removed from the registry within days; new majors also get time to settle.
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    open-pull-requests-limit: 5
+    # Groups bundle minor/patch updates only. A dependency goes into the first group it
+    # matches, so `everything-else` must stay last. Majors match no group, so every major
+    # (for any package, including future ones) opens as its own PR. Treat a major PR as an
+    # announcement: do the upgrade on your own branch, or comment
+    # `@dependabot ignore this major version` and add it to the roadmap.
+    groups:
+      react-router:
+        patterns: ['react-router', '@react-router/*']
+        update-types: ['minor', 'patch']
+      prisma:
+        patterns: ['prisma', '@prisma/*']
+        update-types: ['minor', 'patch']
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+        update-types: ['minor', 'patch']
+      tailwind:
+        patterns: ['tailwindcss', '@tailwindcss/*']
+        update-types: ['minor', 'patch']
+      everything-else:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+    ignore:
+      # @types/node's major must follow the Node runtime (24 in .nvmrc, engines, Vercel).
+      # A newer major would likely pass CI while describing APIs the runtime doesn't have.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+  # Keeps the SHA-pinned actions in .github/workflows up to date (SHA and version comment).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ['*']
