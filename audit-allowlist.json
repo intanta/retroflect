@@ -1,0 +1,8 @@
+[
+	{
+		"id": "GHSA-ggr8-5vv4-36mx",
+		"package": "deepmerge-ts",
+		"reason": "Reached only through prisma -> @prisma/config, which merges our own Prisma config when the CLI runs (generate/migrate); no untrusted input. All Prisma 6.x versions are affected; the fix is Prisma 7, planned for Phase 3 (moving Prisma into apps/api).",
+		"expires": "2027-02-09"
+	}
+]
